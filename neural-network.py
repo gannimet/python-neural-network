@@ -157,7 +157,6 @@ class NeuralNetwork():
             partial_deltas[l] = 0.5 * output_layer_derivative * self.output_activation_func(self.weighted_sums[l], derivative=True)
           else:
             # Hidden Layer
-            # numpy.matmul(self.weights[l+1].T, partial_deltas[l+1]) * \
             partial_deltas[l] = \
               numpy.matmul(partial_deltas[l+1].T, self.weights[l+1]) * \
               self.hidden_activation_func(self.weighted_sums[l], derivative=True)
