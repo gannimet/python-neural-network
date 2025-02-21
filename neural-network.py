@@ -158,7 +158,7 @@ class NeuralNetwork():
           else:
             # Hidden Layer
             partial_deltas[l] = \
-              numpy.matmul(partial_deltas[l+1].T, self.weights[l+1]) * \
+              numpy.matmul(self.weights[l+1].T, partial_deltas[l+1]) * \
               self.hidden_activation_func(self.weighted_sums[l], derivative=True)
 
           # Benutze die partiellen Deltas um die gewünschten Gewichtsanpassungen
@@ -200,7 +200,7 @@ class NeuralNetwork():
 
 if __name__ == '__main__':
   nn = NeuralNetwork(
-    structure = [3, 4, 1],
+    structure = [3, 2, 1],
     eta=0.01,
     n_iterations=5000,
     output_activation_func=relu,
