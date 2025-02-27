@@ -6,6 +6,11 @@ def relu(x, derivative=False):
     return numpy.heaviside(x, 1) # 1 wenn x>=0 ist, 0 wenn x < 0
   return numpy.maximum(x, 0)
 
+def leaky_relu(x, derivative=False):
+  if derivative:
+    return numpy.where(x > 0, 1, 0.1)
+  return numpy.where(x > 0, x, 0.1 * x)
+
 def identity(x, derivative=False):
   if derivative:
     return 1
@@ -147,14 +152,15 @@ class NeuralNetwork():
 
         prediction = self.predict(X)
         diff = prediction - Y
-        output_layer_derivative = 0.5 * diff
+        output_layer_derivative = 2 * diff
         error += numpy.sum(diff ** 2)
 
         # Backpropagation: Rückwärts durch die Layer iterieren und deltas berechnen
         for l in range(len(self.activations)-1, 0, -1):
           if l == len(self.activations) - 1:
             # Output-Layer
-            partial_deltas[l] = 0.5 * output_layer_derivative * self.output_activation_func(self.weighted_sums[l], derivative=True)
+            partial_deltas[l] = output_layer_derivative * \
+              self.output_activation_func(self.weighted_sums[l], derivative=True)
           else:
             # Hidden Layer
             partial_deltas[l] = \
@@ -200,11 +206,11 @@ class NeuralNetwork():
 
 if __name__ == '__main__':
   nn = NeuralNetwork(
-    structure = [3, 2, 1],
+    structure = [3, 4, 1],
     eta=0.01,
     n_iterations=5000,
-    output_activation_func=relu,
-    hidden_activation_func=relu
+    output_activation_func=leaky_relu,
+    hidden_activation_func=leaky_relu
   )
 
   training_data = [
