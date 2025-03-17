@@ -1,25 +1,32 @@
 import numpy
 import matplotlib.pyplot as plt
 
-def relu(x, derivative=False):
+def relu(z, derivative=False):
   if derivative:
-    return numpy.heaviside(x, 1) # 1 wenn x>=0 ist, 0 wenn x < 0
-  return numpy.maximum(x, 0)
+    return numpy.heaviside(z, 1) # 1 wenn x>=0 ist, 0 wenn x < 0
+  return numpy.maximum(z, 0)
 
-def leaky_relu(x, derivative=False):
+def leaky_relu(z, derivative=False):
   if derivative:
-    return numpy.where(x > 0, 1, 0.1)
-  return numpy.where(x > 0, x, 0.1 * x)
+    return numpy.where(z > 0, 1, 0.1)
+  return numpy.where(z > 0, z, 0.1 * z)
 
-def identity(x, derivative=False):
+def sigmoid(z, derivative=False):
   if derivative:
-    return 1
-  return x
+    return sigmoid(z) * (1 - sigmoid(z))
+  return 1 / (1 + numpy.exp(-z))
 
-def sigmoid(x, derivative=False):
+def identity(z, derivative=False):
   if derivative:
-    return sigmoid(x) * (1 - sigmoid(x))
-  return 1 / (1 + numpy.exp(-x))
+    return numpy.ones_like(z)
+  return z
+
+def softmax(z):
+  stabilized_z = z - numpy.max(z)
+  exp_z = numpy.exp(stabilized_z)
+  
+  return exp_z / numpy.sum(exp_z)
+  
 
 class NeuralNetwork():
   def __init__(
@@ -27,7 +34,7 @@ class NeuralNetwork():
       structure, # Array mit Anzahlen der Neuronen pro Layer
       eta=0.01, # Lernrate
       n_iterations=1000, # Anzahl an Iterationen, die im Lernschritt durchgeführt werden sollen
-      output_activation_func=identity, # Aktivierungsfunktion im Output-Layer
+      output_activation_func=relu, # Aktivierungsfunktion im Output-Layer
       hidden_activation_func=relu, # Aktivierungsfunktion in den Hidden Layers
   ):
     self.structure = structure
@@ -52,11 +59,12 @@ class NeuralNetwork():
       is_output_layer = l == len(self.structure) - 1
       # Berechne Anzahl der Neuronen, addiere 1 für das Bias-Neuron in
       # Input- und Hidden Layer
-      n_neurons = self.structure[l] if is_output_layer else self.structure[l] + 1
+      n_activations = self.structure[l] if is_output_layer else self.structure[l] + 1
+      n_weighted_sums = self.structure[l]
       # Layer für Neuronenaktivierungen ist Vektor
       # mit 1 Spalte, die mit 0en befüllt wird
-      layer_weighted_sums = numpy.zeros((n_neurons, 1))
-      layer_activations = numpy.zeros((n_neurons, 1))
+      layer_weighted_sums = numpy.zeros((n_weighted_sums, 1))
+      layer_activations = numpy.ones((n_activations, 1))
 
       # Füge den Layer zum Netz hinzu
       self.weighted_sums.append(layer_weighted_sums)
@@ -80,7 +88,7 @@ class NeuralNetwork():
       else:
         # Gewichte von Layer i-1 zu Layer i
         layer_weights = numpy.random.rand(
-          len(self.activations[l]),    # Anzahl der Zeilen
+          len(self.weighted_sums[l]),  # Anzahl der Zeilen
           len(self.activations[l-1]),  # Anzahl der Spalten
         ) * 2 - 1 # Verschiebt die Zufallszahlen in den Bereich [-1, 1]
 
@@ -88,14 +96,12 @@ class NeuralNetwork():
         self.weights.append(layer_weights)
 
   def predict(self, X):
-    # Füge eine Aktivierung von 1 für das Bias-Neuron
-    input_activations = numpy.concatenate([numpy.array([1]), X])
     # Prüfe, ob die Anzahl der Input-Neuronen stimmt
-    if len(self.activations[0]) != len(input_activations):
+    if len(X) != len(self.activations[0]) - 1:
       raise Exception("Falsche Anzahl an Input-Werten übergeben")
 
     # Belege den Input-Layer mit den übergebenen Input plus Bias-Aktivierung
-    self.activations[0] = input_activations
+    self.activations[0][1:] = X
     
     for l in range(1, len(self.activations)):
       # Berechne die gewichteten Summen Z im aktuellen Layer aus dem Produkt
@@ -109,11 +115,11 @@ class NeuralNetwork():
         self.activations[l] = self.output_activation_func(self.weighted_sums[l])
       else:
         # Hidden Layer
-        self.activations[l] = self.hidden_activation_func(self.weighted_sums[l])
+        self.activations[l][1:] = self.hidden_activation_func(self.weighted_sums[l])
 
     return self.activations[-1]
 
-  def fit(self, training_data):
+  def train(self, training_data):
     # Lege Array für die partiellen Ableitungen (Deltas) der einzelnen Layer an
     partial_deltas = []
     # Obwohl wir die Deltas im Input-Layer nicht brauchen, legen wir trotzdem
@@ -121,7 +127,7 @@ class NeuralNetwork():
     for l in range(len(self.activations)):
       # Initialisiere die Deltas eines Layers mit so vielen Einträgen,
       # wie der Layer Neuronen hat. Befülle anfangs mit 0en
-      partial_deltas.append(numpy.zeros((len(self.activations[l]), 1)))
+      partial_deltas.append(numpy.zeros((len(self.weighted_sums[l]), 1)))
 
     # Lege Array für die gewünschten Gewichtsanpassungen (delta W) an
     delta_W = []
@@ -136,7 +142,7 @@ class NeuralNetwork():
         # (siehe Funktion __init_weights__). Befülle aber diesmal anfangs
         # mit 0en statt mit Zufallszahlen
         delta_W.append(numpy.zeros((
-          len(self.activations[l]), # Anzahl der Zeilen
+          len(self.weighted_sums[l]), # Anzahl der Zeilen
           len(self.activations[l-1]), # Anzahl der Spalten
         )))
 
@@ -164,13 +170,13 @@ class NeuralNetwork():
           else:
             # Hidden Layer
             partial_deltas[l] = \
-              numpy.matmul(self.weights[l+1].T, partial_deltas[l+1]) * \
+              numpy.matmul(self.weights[l+1][:, 1:].T, partial_deltas[l+1]) * \
               self.hidden_activation_func(self.weighted_sums[l], derivative=True)
 
           # Benutze die partiellen Deltas um die gewünschten Gewichtsanpassungen
           # delta W auszurechnen. Addiere sie pro Layer auf, später wird aus allen
           # delta Ws der einzelnen Trainingsbeispiele der Mittelwert genommen
-          delta_W[l] += -self.eta * numpy.outer(partial_deltas[l], self.activations[l-1])
+          delta_W[l] += -self.eta * numpy.matmul(partial_deltas[l], self.activations[l-1].T)
 
       # Lasse die Schleife bei 1 beginnen, weil zum Input-Layer keine Gewichte führen
       # und daher der Index 0 hier ignoriert werden muss
@@ -206,34 +212,33 @@ class NeuralNetwork():
 
 if __name__ == '__main__':
   nn = NeuralNetwork(
-    structure = [3, 4, 1],
+    structure=[3, 4, 1],
     eta=0.01,
-    n_iterations=5000,
+    n_iterations=3000,
     output_activation_func=leaky_relu,
-    hidden_activation_func=leaky_relu
+    hidden_activation_func=sigmoid
   )
 
   training_data = [
-    (numpy.array([0, 0, 0]), numpy.array([0])), # Tupel mit (Input, Output)
-    (numpy.array([0, 0, 1]), numpy.array([1])),
-    (numpy.array([0, 1, 0]), numpy.array([2])),
-    (numpy.array([0, 1, 1]), numpy.array([3])),
-    (numpy.array([1, 0, 0]), numpy.array([4])),
-    # Die 5 lassen wir aus den Trainingsdaten weg und hoffen,
-    # dass das Netz sie trotzdem "lernen" wird
-    (numpy.array([1, 1, 0]), numpy.array([6])),
-    (numpy.array([1, 1, 1]), numpy.array([7])),
+    (numpy.array([[0], [0], [0]]), numpy.array([[0]])), # Tupel mit (Input, Output)
+    (numpy.array([[0], [0], [1]]), numpy.array([[1]])),
+    (numpy.array([[0], [1], [0]]), numpy.array([[2]])),
+    (numpy.array([[0], [1], [1]]), numpy.array([[3]])),
+    (numpy.array([[1], [0], [0]]), numpy.array([[4]])),
+    #(numpy.array([[1], [0], [1]]), numpy.array([[5]])),
+    (numpy.array([[1], [1], [0]]), numpy.array([[6]])),
+    (numpy.array([[1], [1], [1]]), numpy.array([[7]])),
   ]
-  nn.fit(training_data)
-  input = numpy.array([1, 0, 1]);
+  nn.train(training_data)
+  input = numpy.array([[1], [0], [1]]);
   prediction = nn.predict(input)
-  nn.dump()
+  #nn.dump()
   print("=====")
-  print("Prediction for unknown", input, ":", prediction)
+  print("Prediction for unknown", input, ":", prediction[0][0])
 
   for X, _ in training_data:
     output = nn.predict(X)
-    print("Prediction for known data", X, ":", output)
+    print("Prediction for known data", X, ":", output[0][0])
 
   nn.plot()
 
