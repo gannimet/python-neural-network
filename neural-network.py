@@ -215,8 +215,8 @@ if __name__ == '__main__':
     structure=[3, 4, 1],
     eta=0.01,
     n_iterations=3000,
-    output_activation_func=leaky_relu,
-    hidden_activation_func=sigmoid
+    output_activation_func=relu,
+    hidden_activation_func=relu
   )
 
   training_data = [
@@ -233,12 +233,11 @@ if __name__ == '__main__':
   input = numpy.array([[1], [0], [1]]);
   prediction = nn.predict(input)
   #nn.dump()
-  print("=====")
-  print("Prediction for unknown", input, ":", prediction[0][0])
+  print("Vorhersage für unbekannten Input", input, ":", prediction[0, 0])
 
   for X, _ in training_data:
     output = nn.predict(X)
-    print("Prediction for known data", X, ":", output[0][0])
+    print("Vorhersage für bekannten Input", X, ":", output[0, 0])
 
   nn.plot()
 
