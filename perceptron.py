@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
 def heaviside(x):
     return 0 if x < 0 else 1
@@ -22,14 +21,14 @@ class Perceptron():
             total_error = 0;
             self.total_num_iterations += 1
 
-            for desired in training_data:
-                for x in training_data[desired]:
-                    z = self.b + self.w0 * x[0] + self.w1 * x[1]
+            for desired, points in training_data:
+                for x_0, x_1 in points:
+                    z = self.b + self.w0 * x_0 + self.w1 * x_1
                     a = heaviside(z)
                     error = desired - a
                     d_b += self.eta * error
-                    d_w0 += self.eta * error * x[0]
-                    d_w1 += self.eta * error * x[1]
+                    d_w0 += self.eta * error * x_0
+                    d_w1 += self.eta * error * x_1
                     total_error += error ** 2
 
             if total_error == 0:
@@ -49,10 +48,10 @@ class Perceptron():
 
 
 if __name__ == '__main__':
-    classified_points = {
-        0: [(-1, -6), (-4, -7), (-6, 0)],
-        1: [(-1, -1), (2, -2), (3, -7)]
-    }
+    classified_points = [
+        (0, [(4, -12), (-4, -7), (-6, 0)]),
+        (1, [(-1, -1), (2, -2), (3, -7)])
+    ]
 
     pcp = Perceptron(3, -12, 5, 0.1)
     pcp.train(classified_points)
@@ -65,12 +64,12 @@ if __name__ == '__main__':
     print("Linear function params (m, n) = ", (m, n))
 
     plt.figure(1, figsize=(5, 5))
-    plt.scatter(*zip(*classified_points[0]), color='blue')
-    plt.scatter(*zip(*classified_points[1]), color='red')
-    
-    x = np.linspace(-8, 8, 2)
-    y = m * x + n
-    plt.plot(x, y, color='green')
+    plt.scatter(*zip(*classified_points[0][1]), color='blue')
+    plt.scatter(*zip(*classified_points[1][1]), color='red')
+
+    X = [-8, 8]
+    Y = [m * x + n for x in X]
+    plt.plot(X, Y, color='green')
     
     plt.xlabel('x_0')
     plt.ylabel('x_1')
