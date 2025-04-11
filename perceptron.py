@@ -21,11 +21,11 @@ class Perceptron():
             total_error = 0;
             self.total_num_iterations += 1
 
-            for desired, points in training_data:
+            for y, points in training_data:
                 for x_0, x_1 in points:
                     z = self.b + self.w0 * x_0 + self.w1 * x_1
                     a = heaviside(z)
-                    error = desired - a
+                    error = y - a
                     d_b += self.eta * error
                     d_w0 += self.eta * error * x_0
                     d_w1 += self.eta * error * x_1
