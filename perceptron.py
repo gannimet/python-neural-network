@@ -64,8 +64,9 @@ if __name__ == '__main__':
     print("Linear function params (m, n) = ", (m, n))
 
     plt.figure(1, figsize=(5, 5))
-    plt.scatter(*zip(*classified_points[0][1]), color='blue')
-    plt.scatter(*zip(*classified_points[1][1]), color='red')
+    plt.scatter(*zip(*classified_points[0][1]), color='blue', label='Klasse 0')
+    plt.scatter(*zip(*classified_points[1][1]), color='red', label='Klasse 1')
+    plt.legend()
 
     X = [-8, 8]
     Y = [m * x + n for x in X]
