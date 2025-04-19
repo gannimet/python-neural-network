@@ -1,5 +1,7 @@
 import numpy
 import matplotlib.pyplot as plt
+from datetime import datetime
+import random
 
 def relu(z, derivative=False):
   if derivative:
@@ -105,9 +107,12 @@ class NeuralNetwork():
           len(self.activations[l-1]),
         )))
 
-    for _ in range(self.n_iterations):
+    for i in range(self.n_iterations):
+      now = datetime.now()
+      print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
+      training_data_sample = random.sample(training_data, 200)
       error = 0
-      for X, Y in training_data:
+      for X, Y in training_data_sample:
         if len(Y) != len(self.activations[-1]):
           raise Exception("Falsche Anzahl an erwarteten Output-Werten übergeben")
 
@@ -118,8 +123,11 @@ class NeuralNetwork():
 
         for l in range(len(self.activations)-1, 0, -1):
           if l == len(self.activations) - 1:
-            partial_deltas[l] = output_layer_derivative * \
-              self.output_activation_func(self.weighted_sums[l], derivative=True)
+            if self.output_activation_func == softmax:
+              partial_deltas[l] = diff
+            else:
+              partial_deltas[l] = output_layer_derivative * \
+                self.output_activation_func(self.weighted_sums[l], derivative=True)
           else:
             partial_deltas[l] = \
               numpy.matmul(self.weights[l+1][:, 1:].T, partial_deltas[l+1]) * \
@@ -155,32 +163,48 @@ class NeuralNetwork():
 
 if __name__ == '__main__':
   nn = NeuralNetwork(
-    structure=[3, 4, 1],
+    structure=[3, 2, 2, 8],
     eta=0.01,
-    n_iterations=3000,
-    output_activation_func=leaky_relu,
+    n_iterations=20_000,
+    output_activation_func=softmax,
     hidden_activation_func=leaky_relu
   )
+  
+  numpy.set_printoptions(suppress=True)
 
+  # Trainingsdaten für Regression
+  # training_data = [
+  #   (numpy.array([[0], [0], [0]]), numpy.array([[0]])),
+  #   (numpy.array([[0], [0], [1]]), numpy.array([[1]])),
+  #   (numpy.array([[0], [1], [0]]), numpy.array([[2]])),
+  #   (numpy.array([[0], [1], [1]]), numpy.array([[3]])),
+  #   (numpy.array([[1], [0], [0]]), numpy.array([[4]])),
+  #   #(numpy.array([[1], [0], [1]]), numpy.array([[5]])),
+  #   (numpy.array([[1], [1], [0]]), numpy.array([[6]])),
+  #   (numpy.array([[1], [1], [1]]), numpy.array([[7]])),
+  # ]
+  
+  # Trainingsdaten für Klassifikation
   training_data = [
-    (numpy.array([[0], [0], [0]]), numpy.array([[0]])),
-    (numpy.array([[0], [0], [1]]), numpy.array([[1]])),
-    (numpy.array([[0], [1], [0]]), numpy.array([[2]])),
-    (numpy.array([[0], [1], [1]]), numpy.array([[3]])),
-    (numpy.array([[1], [0], [0]]), numpy.array([[4]])),
-    #(numpy.array([[1], [0], [1]]), numpy.array([[5]])),
-    (numpy.array([[1], [1], [0]]), numpy.array([[6]])),
-    (numpy.array([[1], [1], [1]]), numpy.array([[7]])),
+    (numpy.array([[0], [0], [0]]), numpy.array([[1], [0], [0], [0], [0], [0], [0], [0]])),
+    (numpy.array([[0], [0], [1]]), numpy.array([[0], [1], [0], [0], [0], [0], [0], [0]])),
+    (numpy.array([[0], [1], [0]]), numpy.array([[0], [0], [1], [0], [0], [0], [0], [0]])),
+    (numpy.array([[0], [1], [1]]), numpy.array([[0], [0], [0], [1], [0], [0], [0], [0]])),
+    (numpy.array([[1], [0], [0]]), numpy.array([[0], [0], [0], [0], [1], [0], [0], [0]])),
+    #(numpy.array([[1], [0], [1]]), numpy.array([[0], [0], [0], [0], [0], [1], [0], [0]])),
+    (numpy.array([[1], [1], [0]]), numpy.array([[0], [0], [0], [0], [0], [0], [1], [0]])),
+    (numpy.array([[1], [1], [1]]), numpy.array([[0], [0], [0], [0], [0], [0], [0], [1]])),
   ]
+  
   nn.train(training_data)
   input = numpy.array([[1], [0], [1]]);
   prediction = nn.predict(input)
   #nn.dump()
-  print("Vorhersage für unbekannten Input", input, ":", prediction[0, 0])
+  print("Vorhersage für unbekannten Input", input, ":", prediction)
 
   for X, _ in training_data:
     output = nn.predict(X)
-    print("Vorhersage für bekannten Input", X, ":", output[0, 0])
+    print("Vorhersage für bekannten Input", X, ":", output)
 
   nn.plot()
 
