@@ -39,12 +39,14 @@ class NeuralNetwork():
       n_iterations=1000,
       output_activation_func=relu,
       hidden_activation_func=relu,
+      sample_size=0
   ):
     self.structure = structure
     self.eta = eta
     self.n_iterations = n_iterations
     self.output_activation_func = output_activation_func
     self.hidden_activation_func = hidden_activation_func
+    self.sample_size = sample_size
     self.error_progression = []
     
     if isinstance(self.structure, list):
@@ -72,10 +74,12 @@ class NeuralNetwork():
       if l == 0:
         self.weights.append([])
       else:
-        layer_weights = numpy.random.rand(
-          len(self.weighted_sums[l]),
-          len(self.activations[l-1]),
-        ) * 2 - 1
+        n_in = len(self.activations[l-1])
+        n_out = len(self.weighted_sums[l])
+        layer_weights = numpy.random.randn(
+          n_out,
+          n_in,
+        ) * numpy.sqrt(2 / n_in)
 
         self.weights.append(layer_weights)
         
@@ -105,6 +109,7 @@ class NeuralNetwork():
     self.activations[0][1:] = X
     
     for l in range(1, len(self.activations)):
+      self.activations[l-1] = numpy.clip(self.activations[l-1], -1e3, 1e3)
       self.weighted_sums[l] = numpy.matmul(self.weights[l], self.activations[l-1])
 
       if l == len(self.activations) - 1:
@@ -132,7 +137,11 @@ class NeuralNetwork():
     for i in range(self.n_iterations):
       now = datetime.now()
       print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
-      training_data_sample = random.sample(training_data, 200)
+      training_data_sample = (
+        training_data
+        if self.sample_size == 0
+        else random.sample(training_data, self.sample_size)
+      )
       error = 0
       for X, Y in training_data_sample:
         if len(Y) != len(self.activations[-1]):
@@ -185,38 +194,38 @@ class NeuralNetwork():
 
 if __name__ == '__main__':
   nn = NeuralNetwork(
-    structure=[3, 2, 2, 8],
+    structure=[3, 4, 1],
     eta=0.01,
-    n_iterations=20_000,
-    output_activation_func=softmax,
+    n_iterations=5_000,
+    output_activation_func=leaky_relu,
     hidden_activation_func=leaky_relu
   )
   
   numpy.set_printoptions(suppress=True)
 
   # Trainingsdaten für Regression
-  # training_data = [
-  #   (numpy.array([[0], [0], [0]]), numpy.array([[0]])),
-  #   (numpy.array([[0], [0], [1]]), numpy.array([[1]])),
-  #   (numpy.array([[0], [1], [0]]), numpy.array([[2]])),
-  #   (numpy.array([[0], [1], [1]]), numpy.array([[3]])),
-  #   (numpy.array([[1], [0], [0]]), numpy.array([[4]])),
-  #   #(numpy.array([[1], [0], [1]]), numpy.array([[5]])),
-  #   (numpy.array([[1], [1], [0]]), numpy.array([[6]])),
-  #   (numpy.array([[1], [1], [1]]), numpy.array([[7]])),
-  # ]
+  training_data = [
+    (numpy.array([[0], [0], [0]]), numpy.array([[0]])),
+    (numpy.array([[0], [0], [1]]), numpy.array([[1]])),
+    (numpy.array([[0], [1], [0]]), numpy.array([[2]])),
+    (numpy.array([[0], [1], [1]]), numpy.array([[3]])),
+    (numpy.array([[1], [0], [0]]), numpy.array([[4]])),
+    #(numpy.array([[1], [0], [1]]), numpy.array([[5]])),
+    (numpy.array([[1], [1], [0]]), numpy.array([[6]])),
+    (numpy.array([[1], [1], [1]]), numpy.array([[7]])),
+  ]
   
   # Trainingsdaten für Klassifikation
-  training_data = [
-    (numpy.array([[0], [0], [0]]), numpy.array([[1], [0], [0], [0], [0], [0], [0], [0]])),
-    (numpy.array([[0], [0], [1]]), numpy.array([[0], [1], [0], [0], [0], [0], [0], [0]])),
-    (numpy.array([[0], [1], [0]]), numpy.array([[0], [0], [1], [0], [0], [0], [0], [0]])),
-    (numpy.array([[0], [1], [1]]), numpy.array([[0], [0], [0], [1], [0], [0], [0], [0]])),
-    (numpy.array([[1], [0], [0]]), numpy.array([[0], [0], [0], [0], [1], [0], [0], [0]])),
-    #(numpy.array([[1], [0], [1]]), numpy.array([[0], [0], [0], [0], [0], [1], [0], [0]])),
-    (numpy.array([[1], [1], [0]]), numpy.array([[0], [0], [0], [0], [0], [0], [1], [0]])),
-    (numpy.array([[1], [1], [1]]), numpy.array([[0], [0], [0], [0], [0], [0], [0], [1]])),
-  ]
+  # training_data = [
+  #   (numpy.array([[0], [0], [0]]), numpy.array([[1], [0], [0], [0], [0], [0], [0], [0]])),
+  #   (numpy.array([[0], [0], [1]]), numpy.array([[0], [1], [0], [0], [0], [0], [0], [0]])),
+  #   (numpy.array([[0], [1], [0]]), numpy.array([[0], [0], [1], [0], [0], [0], [0], [0]])),
+  #   (numpy.array([[0], [1], [1]]), numpy.array([[0], [0], [0], [1], [0], [0], [0], [0]])),
+  #   (numpy.array([[1], [0], [0]]), numpy.array([[0], [0], [0], [0], [1], [0], [0], [0]])),
+  #   #(numpy.array([[1], [0], [1]]), numpy.array([[0], [0], [0], [0], [0], [1], [0], [0]])),
+  #   (numpy.array([[1], [1], [0]]), numpy.array([[0], [0], [0], [0], [0], [0], [1], [0]])),
+  #   (numpy.array([[1], [1], [1]]), numpy.array([[0], [0], [0], [0], [0], [0], [0], [1]])),
+  # ]
   
   nn.train(training_data)
   input = numpy.array([[1], [0], [1]]);
