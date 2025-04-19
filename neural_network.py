@@ -2,6 +2,7 @@ import numpy
 import matplotlib.pyplot as plt
 from datetime import datetime
 import random
+from pathlib import Path
 
 def relu(z, derivative=False):
   if derivative:
@@ -33,7 +34,7 @@ def softmax(z):
 class NeuralNetwork():
   def __init__(
       self,
-      structure,
+      structure=[],
       eta=0.01,
       n_iterations=1000,
       output_activation_func=relu,
@@ -45,8 +46,10 @@ class NeuralNetwork():
     self.output_activation_func = output_activation_func
     self.hidden_activation_func = hidden_activation_func
     self.error_progression = []
-    self.__init_layers()
-    self.__init_weights()
+    
+    if isinstance(self.structure, list):
+      self.__init_layers()
+      self.__init_weights()
 
   def __init_layers(self):
     self.activations = []
@@ -75,6 +78,25 @@ class NeuralNetwork():
         ) * 2 - 1
 
         self.weights.append(layer_weights)
+        
+  def load_from_file(self, filename):
+    loaded_weights = numpy.load(filename)
+    self.weights = [loaded_weights[key] for key in loaded_weights]
+    self.weighted_sums = []
+    self.activations = []
+    
+    for l in range(len(self.weights)):
+      if l == 0:
+        W = self.weights[1]
+        self.weighted_sums.append(numpy.zeros((W.shape[1] - 1, 1)))
+        self.activations.append(numpy.ones((W.shape[1], 1)))
+      else:
+        W = self.weights[l]
+        is_output_layer = l == len(self.weights) - 1
+        n_weighted_sums = W.shape[0]
+        n_activations = W.shape[0] if is_output_layer else W.shape[0] + 1
+        self.weighted_sums.append(numpy.zeros((n_weighted_sums, 1)))
+        self.activations.append(numpy.ones((n_activations, 1)))
 
   def predict(self, X):
     if len(X) != len(self.activations[0]) - 1:

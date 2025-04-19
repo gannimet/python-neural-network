@@ -11,7 +11,6 @@ def load_mnist_training_data():
     folder = Path(f"./mnist/training_set/{label}")
     images = [Image.open(f) for f in folder.iterdir() if f.is_file()]
     outputs = numpy.zeros((10, 1))
-    outputs[label, 0] = 1
     
     for i in range(len(images)):
       pixels = numpy.array(images[i]).flatten() / 255.0
