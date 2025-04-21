@@ -47,19 +47,19 @@ def update_display():
   ax_bar.set_ylabel("Confidence")
   ax_bar.set_title("Prediction")
   
+  # Button
+  button = Button(ax_button, "New random image")
+  button.on_clicked(on_button_click)
+  
   numpy.set_printoptions(suppress=True)
   print(prediction)
   
   # Anzeigen
-  plt.tight_layout()
   plt.show()
   
 def on_button_click(event):
     update_display()
 
 if __name__ == "__main__":
-  # Button
-  button = Button(ax_button, "New random image")
-  button.on_clicked(on_button_click)
   update_display()
   
