@@ -10,7 +10,7 @@ nn = NeuralNetwork(
   hidden_activation_func=leaky_relu,
   output_activation_func=softmax,
 )
-nn.load_from_file("trained_models/mnist_weights_i100000_s2000.npz")
+nn.load_from_file("trained_models/mnist_weights_i1000000_s2000.npz")
 folder = Path(f"./mnist/test_set")
 files = [f for f in folder.iterdir() if f.is_file()]
 
@@ -35,7 +35,7 @@ def update_display():
   # Bild
   ax_img.imshow(image, cmap='gray')
   ax_img.axis('off')
-  ax_img.set_title("Bild")
+  ax_img.set_title("Image")
 
   # Balkendiagramm
   max_index = numpy.argmax(prediction)
@@ -43,9 +43,9 @@ def update_display():
   ax_bar.bar(range(len(prediction)), prediction.flatten(), color=colors)
   ax_bar.set_ylim(0, 1)
   ax_bar.set_xticks(range(len(prediction)))
-  ax_bar.set_xlabel("Klasse")
-  ax_bar.set_ylabel("Wahrscheinlichkeit")
-  ax_bar.set_title("Vorhersage")
+  ax_bar.set_xlabel("Predicted class")
+  ax_bar.set_ylabel("Confidence")
+  ax_bar.set_title("Prediction")
   
   numpy.set_printoptions(suppress=True)
   print(prediction)
@@ -59,7 +59,7 @@ def on_button_click(event):
 
 if __name__ == "__main__":
   # Button
-  button = Button(ax_button, "Neues Bild")
+  button = Button(ax_button, "New random image")
   button.on_clicked(on_button_click)
   update_display()
   
