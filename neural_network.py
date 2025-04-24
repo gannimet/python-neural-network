@@ -2,7 +2,6 @@ import numpy
 import matplotlib.pyplot as plt
 from datetime import datetime
 import random
-from pathlib import Path
 
 def relu(z, derivative=False):
   if derivative:
