@@ -73,14 +73,15 @@ class NeuralNetwork():
       if l == 0:
         self.weights.append([])
       else:
-        n_in = len(self.activations[l-1])
-        n_out = len(self.weighted_sums[l])
-        layer_weights = numpy.random.randn(
-          n_out,
-          n_in,
-        ) * numpy.sqrt(2 / n_in)
+        layer_weights = numpy.random.rand(
+          len(self.weighted_sums[l]),
+          len(self.activations[l-1]),
+        ) * 2 - 1
 
         self.weights.append(layer_weights)
+        
+  def save_to_file(self, filename):
+    numpy.savez(filename, *self.weights)
         
   def load_from_file(self, filename):
     loaded_weights = numpy.load(filename)
@@ -134,8 +135,8 @@ class NeuralNetwork():
         )))
 
     for i in range(self.n_iterations):
-      # now = datetime.now()
-      # print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
+      now = datetime.now()
+      print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
       training_data_sample = (
         training_data
         if self.sample_size == 0

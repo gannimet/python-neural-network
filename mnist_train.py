@@ -25,11 +25,11 @@ if __name__ == "__main__":
   print("Loading training data …")
   training_data = load_mnist_training_data()
   
-  n_iterations = 1_000_000
-  sample_size = 2_000
+  n_iterations = 300_000
+  sample_size = 500
   
   nn = NeuralNetwork(
-    structure=[784, 16, 16, 16, 10],
+    structure=[784, 48, 24, 24, 48, 10],
     eta=0.01,
     hidden_activation_func=leaky_relu,
     output_activation_func=softmax,
@@ -40,5 +40,5 @@ if __name__ == "__main__":
   print("Training network …")
   nn.train(training_data)
   
-  numpy.savez(f"trained_models/mnist_weights_i{n_iterations}_s{sample_size}.npz", *nn.weights)
+  nn.save_to_file(f"trained_models/mnist_weights_i{n_iterations}_s{sample_size}.npz")
   nn.plot()
