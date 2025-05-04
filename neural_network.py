@@ -134,8 +134,8 @@ class NeuralNetwork():
         )))
 
     for i in range(self.n_iterations):
-      now = datetime.now()
-      print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
+      # now = datetime.now()
+      # print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
       training_data_sample = (
         training_data
         if self.sample_size == 0
