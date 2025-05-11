@@ -22,7 +22,7 @@ def load_mnist_training_data():
   return training_data
     
 if __name__ == "__main__":
-  print("Loading training data …")
+  # print("Loading training data …")
   training_data = load_mnist_training_data()
   
   n_iterations = 300_000
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     batch_size=sample_size
   )
   
-  print("Training network …")
+  # print("Training network …")
   nn.train(training_data)
   
   nn.save_to_file(f"trained_models/mnist_weights_i{n_iterations}_s{sample_size}.npz")
