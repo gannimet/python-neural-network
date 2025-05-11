@@ -34,7 +34,7 @@ if __name__ == "__main__":
     hidden_activation_func=leaky_relu,
     output_activation_func=softmax,
     n_iterations=n_iterations,
-    sample_size=sample_size
+    batch_size=sample_size
   )
   
   print("Training network …")

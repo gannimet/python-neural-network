@@ -33,19 +33,19 @@ def softmax(z):
 class NeuralNetwork():
   def __init__(
       self,
-      structure=[],
+      structure=None,
       eta=0.01,
       n_iterations=1000,
       output_activation_func=relu,
       hidden_activation_func=relu,
-      sample_size=0
+      batch_size=0
   ):
     self.structure = structure
     self.eta = eta
     self.n_iterations = n_iterations
     self.output_activation_func = output_activation_func
     self.hidden_activation_func = hidden_activation_func
-    self.sample_size = sample_size
+    self.batch_size = batch_size
     self.error_progression = []
     
     if isinstance(self.structure, list):
@@ -86,21 +86,13 @@ class NeuralNetwork():
   def load_from_file(self, filename):
     loaded_weights = numpy.load(filename)
     self.weights = [loaded_weights[key] for key in loaded_weights]
-    self.weighted_sums = []
-    self.activations = []
+    self.structure = []
     
-    for l in range(len(self.weights)):
-      if l == 0:
-        W = self.weights[1]
-        self.weighted_sums.append(numpy.zeros((W.shape[1] - 1, 1)))
-        self.activations.append(numpy.ones((W.shape[1], 1)))
-      else:
-        W = self.weights[l]
-        is_output_layer = l == len(self.weights) - 1
-        n_weighted_sums = W.shape[0]
-        n_activations = W.shape[0] if is_output_layer else W.shape[0] + 1
-        self.weighted_sums.append(numpy.zeros((n_weighted_sums, 1)))
-        self.activations.append(numpy.ones((n_activations, 1)))
+    for l in range(1, len(self.weights)):
+      self.structure.append(self.weights[l].shape[1] - 1)
+    
+    self.structure.append(self.weights[-1].shape[0])
+    self.__init_layers()
 
   def predict(self, X):
     if len(X) != len(self.activations[0]) - 1:
@@ -135,15 +127,15 @@ class NeuralNetwork():
         )))
 
     for i in range(self.n_iterations):
-      now = datetime.now()
-      print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
-      training_data_sample = (
+      #now = datetime.now()
+      #print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
+      training_batch = (
         training_data
-        if self.sample_size == 0
-        else random.sample(training_data, self.sample_size)
+        if self.batch_size == 0
+        else random.sample(training_data, self.batch_size)
       )
       error = 0
-      for X, Y in training_data_sample:
+      for X, Y in training_batch:
         if len(Y) != len(self.activations[-1]):
           raise Exception("Falsche Anzahl an erwarteten Output-Werten übergeben")
 
