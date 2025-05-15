@@ -15,6 +15,7 @@ def load_mnist_training_data():
     
     for i in range(len(images)):
       pixels = numpy.array(images[i]).flatten() / 255.0
+      print("pixels:", pixels.shape)
       inputs = pixels.reshape((784, 1))
       training_data.append((inputs, outputs))
       
@@ -25,8 +26,8 @@ if __name__ == "__main__":
   # print("Loading training data …")
   training_data = load_mnist_training_data()
   
-  n_iterations = 300_000
-  sample_size = 500
+  n_iterations = 20
+  sample_size = 0
   
   nn = NeuralNetwork(
     structure=[784, 48, 24, 24, 48, 10],

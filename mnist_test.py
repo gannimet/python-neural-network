@@ -10,7 +10,9 @@ nn = NeuralNetwork(
   hidden_activation_func=leaky_relu,
   output_activation_func=softmax,
 )
-nn.load_from_file("trained_models/mnist_weights_i1000000_s2000.npz")
+n_iterations = 1_000_000
+sample_size = 2000
+nn.load_from_file(f"trained_models/mnist_weights_i{n_iterations}_s{sample_size}.npz")
 folder = Path(f"./mnist/test_set")
 files = [f for f in folder.iterdir() if f.is_file()]
 
