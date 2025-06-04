@@ -12,7 +12,7 @@ class Perceptron():
         self.total_num_iterations = 0
 
     def train(self, training_data):
-        total_num_points = len(training_data[0]) + len(training_data[1])
+        total_num_points = len(training_data[0][1]) + len(training_data[1][1])
 
         while True:
             d_b = 0
