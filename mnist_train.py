@@ -15,7 +15,6 @@ def load_mnist_training_data():
     
     for i in range(len(images)):
       pixels = numpy.array(images[i]).flatten() / 255.0
-      print("pixels:", pixels.shape)
       inputs = pixels.reshape((784, 1))
       training_data.append((inputs, outputs))
       
@@ -23,14 +22,14 @@ def load_mnist_training_data():
   return training_data
     
 if __name__ == "__main__":
-  # print("Loading training data …")
+  print("Loading training data …")
   training_data = load_mnist_training_data()
   
-  n_iterations = 20
-  sample_size = 0
+  n_iterations = 500
+  sample_size = 2000
   
   nn = NeuralNetwork(
-    structure=[784, 48, 24, 24, 48, 10],
+    structure=[784, 16, 16, 16, 10],
     eta=0.01,
     hidden_activation_func=leaky_relu,
     output_activation_func=softmax,
@@ -38,7 +37,7 @@ if __name__ == "__main__":
     batch_size=sample_size
   )
   
-  # print("Training network …")
+  print("Training network …")
   nn.train(training_data)
   
   nn.save_to_file(f"trained_models/mnist_weights_i{n_iterations}_s{sample_size}.npz")

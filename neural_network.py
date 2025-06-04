@@ -101,7 +101,7 @@ class NeuralNetwork():
     self.activations[0][1:] = X
     
     for l in range(1, len(self.activations)):
-      self.activations[l-1] = numpy.clip(self.activations[l-1], -1e3, 1e3)
+      #self.activations[l-1] = numpy.clip(self.activations[l-1], -1e3, 1e3)
       self.weighted_sums[l] = numpy.matmul(self.weights[l], self.activations[l-1])
 
       if l == len(self.activations) - 1:
