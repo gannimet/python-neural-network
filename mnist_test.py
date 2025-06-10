@@ -10,8 +10,8 @@ nn = NeuralNetwork(
   hidden_activation_func=leaky_relu,
   output_activation_func=softmax,
 )
-n_iterations = 1_000_000
-sample_size = 2000
+n_iterations = 2_300_000
+sample_size = 1000
 nn.load_from_file(f"trained_models/mnist_weights_i{n_iterations}_s{sample_size}.npz")
 folder = Path(f"./mnist/test_set")
 files = [f for f in folder.iterdir() if f.is_file()]
@@ -54,7 +54,7 @@ def update_display():
   button.on_clicked(on_button_click)
   
   numpy.set_printoptions(suppress=True)
-  print(prediction)
+  #numpy.savez(f"trained_activations/activations_{max_index}.npz", *nn.activations)
   
   # Anzeigen
   plt.show()

@@ -127,8 +127,8 @@ class NeuralNetwork():
         )))
 
     for i in range(self.n_iterations):
-      #now = datetime.now()
-      #print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
+      now = datetime.now()
+      print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
       training_batch = (
         training_data
         if self.batch_size == 0
@@ -163,6 +163,9 @@ class NeuralNetwork():
         delta_W[l][:] = 0
 
       self.error_progression.append(error)
+      
+      if i > 0 and i % 100_000 == 0:
+        self.save_to_file(f"trained_models/mnist_weights_i{i + 1_000_000}_s{self.batch_size}.npz")
 
   def dump(self):
     print("Netzwerk-Architektur")
