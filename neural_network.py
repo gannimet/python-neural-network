@@ -165,7 +165,7 @@ class NeuralNetwork():
       self.error_progression.append(error)
       
       if i > 0 and i % 100_000 == 0:
-        self.save_to_file(f"trained_models/mnist_weights_i{i + 1_000_000}_s{self.batch_size}.npz")
+        self.save_to_file(f"trained_models/mnist_weights_i{i}_s{self.batch_size}.npz")
 
   def dump(self):
     print("Netzwerk-Architektur")
