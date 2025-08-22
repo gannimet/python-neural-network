@@ -79,10 +79,10 @@ class NeuralNetwork():
                 ) * 2 - 1
 
                 self.weights.append(layer_weights)
-                
+
     def save_to_file(self, filename):
         numpy.savez(filename, *self.weights)
-                
+
     def load_from_file(self, filename):
         loaded_weights = numpy.load(filename)
         self.weights = [loaded_weights[key] for key in loaded_weights]
@@ -127,8 +127,8 @@ class NeuralNetwork():
                 )))
 
         for i in range(self.n_iterations):
-            now = datetime.now()
-            print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
+            # now = datetime.now()
+            # print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
             training_batch = (
                 training_data
                 if self.batch_size == 0
