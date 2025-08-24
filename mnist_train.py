@@ -26,7 +26,7 @@ if __name__ == "__main__":
   training_data = load_mnist_training_data()
   
   n_iterations = 1_000_000
-  sample_size = 2_000
+  sample_size = 1_000
   
   nn = NeuralNetwork(
     structure=[784, 16, 16, 16, 10],

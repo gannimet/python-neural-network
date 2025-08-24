@@ -121,10 +121,7 @@ class NeuralNetwork():
             if l == 0:
                 delta_W.append([])
             else:
-                delta_W.append(numpy.zeros((
-                    len(self.weighted_sums[l]),
-                    len(self.activations[l-1]),
-                )))
+                delta_W.append(numpy.zeros(self.weights[l].shape))
 
         for i in range(self.n_iterations):
             # now = datetime.now()
@@ -159,13 +156,10 @@ class NeuralNetwork():
                     delta_W[l] += -self.eta * numpy.matmul(partial_deltas[l], self.activations[l-1].T)
 
             for l in range(1, len(delta_W)):
-                self.weights[l] += delta_W[l] / len(training_data)
+                self.weights[l] += delta_W[l] / len(training_batch)
                 delta_W[l][:] = 0
 
             self.error_progression.append(error)
-            
-            if i > 0 and i % 100_000 == 0:
-                self.save_to_file(f"trained_models/mnist_weights_i{i}_s{self.batch_size}.npz")
 
     def dump(self):
         print("Netzwerk-Architektur")
