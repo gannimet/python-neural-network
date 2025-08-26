@@ -54,7 +54,6 @@ def update_display():
   button.on_clicked(on_button_click)
   
   numpy.set_printoptions(suppress=True)
-  numpy.savez(f"trained_activations/activations_{max_index}.npz", *nn.activations, *nn.weights)
   
   # Anzeigen
   plt.show()
