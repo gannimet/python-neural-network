@@ -121,11 +121,11 @@ class NeuralNetwork():
             if l == 0:
                 delta_W.append([])
             else:
-                delta_W.append(numpy.zeros(self.weights[l].shape))
+                delta_W.append(numpy.zeros_like(self.weights[l]))
 
         for i in range(self.n_iterations):
-            # now = datetime.now()
-            # print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
+            now = datetime.now()
+            print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
             training_batch = (
                 training_data
                 if self.batch_size == 0
