@@ -12,7 +12,7 @@ nn = NeuralNetwork(
 )
 
 n_iterations = 1_000_000
-sample_size = 2000
+sample_size = 2_000
 
 nn.load_from_file(f"trained_models/mnist_weights_i{n_iterations}_s{sample_size}.npz")
 folder = Path(f"./mnist/test_set")
