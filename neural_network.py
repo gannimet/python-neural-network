@@ -73,10 +73,14 @@ class NeuralNetwork():
             if l == 0:
                 self.weights.append([])
             else:
-                layer_weights = numpy.random.rand(
+                # layer_weights = numpy.random.rand(
+                #     len(self.weighted_sums[l]),
+                #     len(self.activations[l-1]),
+                # ) * 2 - 1
+                layer_weights = numpy.random.randn(
                     len(self.weighted_sums[l]),
-                    len(self.activations[l-1]),
-                ) * 2 - 1
+                    len(self.activations[l-1])
+                ) * numpy.sqrt(2.0 / len(self.activations[l-1])) # Glorot
 
                 self.weights.append(layer_weights)
 
@@ -101,7 +105,6 @@ class NeuralNetwork():
         self.activations[0][1:] = X
         
         for l in range(1, len(self.activations)):
-            #self.activations[l-1] = numpy.clip(self.activations[l-1], -1e3, 1e3)
             self.weighted_sums[l] = numpy.matmul(self.weights[l], self.activations[l-1])
 
             if l == len(self.activations) - 1:
@@ -124,8 +127,6 @@ class NeuralNetwork():
                 delta_W.append(numpy.zeros_like(self.weights[l]))
 
         for i in range(self.n_iterations):
-            now = datetime.now()
-            print("Starting iteration", i, "at", now.strftime("%H:%M:%S"))
             training_batch = (
                 training_data
                 if self.batch_size == 0
@@ -160,6 +161,8 @@ class NeuralNetwork():
                 delta_W[l][:] = 0
 
             self.error_progression.append(error)
+            now = datetime.now()
+            print(f"Finished iteration {i} at {now.strftime("%H:%M:%S")}, Error: {error}")
 
     def dump(self):
         print("Netzwerk-Architektur")
