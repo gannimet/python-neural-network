@@ -2,6 +2,7 @@ import numpy
 import matplotlib.pyplot as plt
 from datetime import datetime
 import random
+import utils
 
 def relu(z, derivative=False):
     if derivative:
@@ -38,7 +39,8 @@ class NeuralNetwork():
             n_iterations=1000,
             output_activation_func=relu,
             hidden_activation_func=relu,
-            batch_size=0
+            batch_size=0,
+            save_every_1k=False
     ):
         self.structure = structure
         self.eta = eta
@@ -46,6 +48,7 @@ class NeuralNetwork():
         self.output_activation_func = output_activation_func
         self.hidden_activation_func = hidden_activation_func
         self.batch_size = batch_size
+        self.save_every_1k = save_every_1k
         self.error_progression = []
         
         if isinstance(self.structure, list):
@@ -159,6 +162,9 @@ class NeuralNetwork():
             self.error_progression.append(error)
             now = datetime.now()
             print(f"Finished iteration {i} at {now.strftime("%H:%M:%S")}, Error: {error}")
+            
+            if self.save_every_1k and (i == 0 or (i+1) % 1_000 == 0):
+                self.save_to_file(f"classification_models/mnist_weights_i{i+1}_s{self.batch_size}_{utils.get_layer_descriptor(self.structure[1:-1])}.npz")
 
     def dump(self):
         print("Netzwerk-Architektur")

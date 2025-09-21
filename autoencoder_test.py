@@ -11,9 +11,9 @@ nn = NeuralNetwork(
     output_activation_func=leaky_relu,
 )
 
-n_iterations = 100_000
-sample_size = 50
-inner_structure = [100, 50, 25, 50, 100]
+n_iterations = 1_000_000
+sample_size = 32
+inner_structure = [64, 32, 16, 32, 64]
 
 nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
 mnist_test_files = utils.load_mnist_test_files()
