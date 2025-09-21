@@ -1,4 +1,4 @@
-from neural_network import NeuralNetwork, leaky_relu
+from neural_network import NeuralNetwork, leaky_relu, sigmoid
 import numpy
 
 if __name__ == '__main__':

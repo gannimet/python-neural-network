@@ -73,14 +73,10 @@ class NeuralNetwork():
             if l == 0:
                 self.weights.append([])
             else:
-                # layer_weights = numpy.random.rand(
-                #     len(self.weighted_sums[l]),
-                #     len(self.activations[l-1]),
-                # ) * 2 - 1
                 layer_weights = numpy.random.randn(
                     len(self.weighted_sums[l]),
                     len(self.activations[l-1])
-                ) * numpy.sqrt(2.0 / len(self.activations[l-1])) # Glorot
+                ) * numpy.sqrt(2.0 / len(self.activations[l-1]))
 
                 self.weights.append(layer_weights)
 

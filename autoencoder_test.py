@@ -11,10 +11,10 @@ nn = NeuralNetwork(
     output_activation_func=leaky_relu,
 )
 
-n_iterations = 100_000
+n_iterations = 1_000_000
 sample_size = 32
 
-nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_256x128x64x128x256.npz")
+nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_64x32x16x32x64.npz")
 folder = Path(f"./mnist/test_set")
 files = [f for f in folder.iterdir() if f.is_file()]
 
