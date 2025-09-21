@@ -13,7 +13,6 @@ n_iterations = 1_000_000
 sample_size = 2_000
 
 nn.load_from_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample_size}.npz")
-
 mnist_test_files = utils.load_mnist_test_files()
 
 fig = plt.figure(1, figsize=(8, 4))

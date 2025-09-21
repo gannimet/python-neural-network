@@ -11,20 +11,12 @@ nn = NeuralNetwork(
     output_activation_func=leaky_relu,
 )
 
-n_iterations = 1_000_000
-sample_size = 32
-inner_structure = [256, 128, 64, 32, 64, 128, 256]
+n_iterations = 100_000
+sample_size = 50
+inner_structure = [100, 50, 25, 50, 100]
 
 nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
 mnist_test_files = utils.load_mnist_test_files()
-
-def load_random_image_and_prediction():
-    random_file = random.choice(mnist_test_files)
-    image = Image.open(random_file)
-    pixels = numpy.array(image).flatten() / 255.0
-    inputs = pixels.reshape((784, 1))
-    prediction = nn.predict(inputs)
-    return image, prediction
 
 def create_image_from_prediction(prediction):
     prediction_reshaped = prediction.reshape((28, 28))
@@ -49,7 +41,7 @@ class AutoencoderViewer:
         self.ax2.axis('off')
     
     def update_images(self):
-        original_pil, prediction = load_random_image_and_prediction()
+        original_pil, prediction = utils.load_random_image_and_prediction(mnist_test_files, nn)
         reconstruction_pil = create_image_from_prediction(prediction)
         
         original_array = numpy.array(original_pil)
@@ -74,5 +66,6 @@ class AutoencoderViewer:
     def show(self):
         plt.show()
 
-viewer = AutoencoderViewer()
-viewer.show()
+if __name__ == "__main__":
+    viewer = AutoencoderViewer()
+    viewer.show()

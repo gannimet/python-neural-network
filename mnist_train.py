@@ -1,15 +1,14 @@
 from PIL import Image
 import numpy
-from pathlib import Path
 import random
 from neural_network import NeuralNetwork, leaky_relu, softmax, sigmoid
+import utils
 
 def load_mnist_training_data(autoencoding=False):
     training_data = []
     
     for label in range(10):
-        folder = Path(f"./mnist/training_set/{label}")
-        files = [f for f in folder.iterdir() if f.suffix == '.jpg']
+        files = utils.load_mnist_training_files(label)
         outputs = numpy.zeros((10, 1))
         outputs[label, 0] = 1.0
         
@@ -30,7 +29,7 @@ if __name__ == "__main__":
     training_data = load_mnist_training_data()
     
     n_iterations = 1_000_000
-    sample_size = 1_000
+    sample_size = 50
     
     nn = NeuralNetwork(
         structure=[784, 16, 16, 16, 10],
