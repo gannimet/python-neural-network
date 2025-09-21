@@ -94,13 +94,13 @@ class NeuralNetwork():
         self.structure.append(self.weights[-1].shape[0])
         self.__init_layers()
 
-    def predict(self, X):
-        if len(X) != len(self.activations[0]) - 1:
+    def predict(self, X, start_layer=0):
+        if len(X) != len(self.activations[start_layer]) - 1:
             raise Exception("Falsche Anzahl an Input-Werten übergeben")
 
-        self.activations[0][1:] = X
+        self.activations[start_layer][1:] = X
         
-        for l in range(1, len(self.activations)):
+        for l in range(start_layer + 1, len(self.activations)):
             self.weighted_sums[l] = numpy.matmul(self.weights[l], self.activations[l-1])
 
             if l == len(self.activations) - 1:

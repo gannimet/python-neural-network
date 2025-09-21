@@ -1,10 +1,8 @@
 import numpy
-import random
-from pathlib import Path
-from PIL import Image
 from neural_network import NeuralNetwork, leaky_relu, softmax
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
+import utils
 
 nn = NeuralNetwork(
   hidden_activation_func=leaky_relu,
@@ -15,26 +13,18 @@ n_iterations = 1_000_000
 sample_size = 2_000
 
 nn.load_from_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample_size}.npz")
-folder = Path(f"./mnist/test_set")
-files = [f for f in folder.iterdir() if f.is_file()]
+
+mnist_test_files = utils.load_mnist_test_files()
 
 fig = plt.figure(1, figsize=(8, 4))
 ax_img = fig.add_axes([0.05, 0.2, 0.4, 0.7])
 ax_bar = fig.add_axes([0.5, 0.2, 0.45, 0.7])
 ax_button = fig.add_axes([0.15, 0.05, 0.2, 0.1])
 
-def load_random_image_and_prediction():
-  random_file = random.choice(files)
-  image = Image.open(random_file)
-  pixels = numpy.array(image).flatten() / 255.0
-  inputs = pixels.reshape((784, 1))
-  prediction = nn.predict(inputs)
-  return image, prediction
-
 def update_display():
   ax_img.clear()
   ax_bar.clear()
-  image, prediction = load_random_image_and_prediction()
+  image, prediction = utils.load_random_image_and_prediction(mnist_test_files, nn)
   
   # Bild
   ax_img.imshow(image, cmap='gray')

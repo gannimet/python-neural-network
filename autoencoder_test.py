@@ -2,9 +2,9 @@ import numpy
 import random
 from PIL import Image
 from neural_network import NeuralNetwork, leaky_relu
-from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
+import utils
 
 nn = NeuralNetwork(
     hidden_activation_func=leaky_relu,
@@ -13,13 +13,13 @@ nn = NeuralNetwork(
 
 n_iterations = 1_000_000
 sample_size = 32
+inner_structure = [256, 128, 64, 32, 64, 128, 256]
 
-nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_64x32x16x32x64.npz")
-folder = Path(f"./mnist/test_set")
-files = [f for f in folder.iterdir() if f.is_file()]
+nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
+mnist_test_files = utils.load_mnist_test_files()
 
 def load_random_image_and_prediction():
-    random_file = random.choice(files)
+    random_file = random.choice(mnist_test_files)
     image = Image.open(random_file)
     pixels = numpy.array(image).flatten() / 255.0
     inputs = pixels.reshape((784, 1))
