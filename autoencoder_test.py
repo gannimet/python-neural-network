@@ -48,10 +48,14 @@ class AutoencoderViewer:
         # Erstes Bild laden und anzeigen
         self.load_and_show_image()
         
-        # Button für neues Bild
-        ax_button = plt.axes([0.4, 0.05, 0.2, 0.06])
+        # Buttons für neues Bild und Reset
+        ax_button = plt.axes([0.35, 0.02, 0.15, 0.06])
         self.button = widgets.Button(ax_button, 'New random image')
         self.button.on_clicked(self.on_button_click)
+        
+        ax_reset = plt.axes([0.52, 0.02, 0.1, 0.06])
+        self.reset_button = widgets.Button(ax_reset, 'Reset')
+        self.reset_button.on_clicked(self.on_reset_click)
     
     def setup_latent_area(self):
         """Erstellt die mittlere Spalte mit vertikalen Mini-Slidern"""
@@ -88,7 +92,7 @@ class AutoencoderViewer:
             )
             
             # Callback für Slider-Änderung hinzufügen
-            slider.on_changed(lambda val, idx=i: self.on_slider_change())
+            slider.on_changed(lambda val, idx=i: self.on_slider_change(idx, val))
             
             self.sliders.append(slider)
     
@@ -98,7 +102,10 @@ class AutoencoderViewer:
         original_pil, prediction = utils.load_random_image_and_prediction(mnist_test_files, nn)
         
         # Latent-Aktivierungen des Originalbildes abrufen (Neuronen 1-16, Bias bei 0 überspringen)
-        latent_activations = nn.activations[3][1:17].flatten()  # Index 1 bis 16 (17 exklusiv)  
+        latent_activations = nn.activations[3][1:17].flatten()  # Index 1 bis 16 (17 exklusiv)
+        
+        # Ursprüngliche Werte speichern für Reset-Funktion
+        self.original_latent_values = latent_activations.copy()  
         
         # Slider mit Latent-Werten aktualisieren
         for i, activation_value in enumerate(latent_activations):
@@ -122,7 +129,7 @@ class AutoencoderViewer:
         # Display aktualisieren
         self.fig.canvas.draw()
     
-    def on_slider_change(self):
+    def on_slider_change(self, slider_index, new_value):
         """Callback für Slider-Änderungen - berechnet neue Rekonstruktion"""
         # Alle 16 Slider-Werte sammeln
         latent_copy = numpy.array([slider.val for slider in self.sliders]).reshape(-1, 1)
@@ -143,6 +150,14 @@ class AutoencoderViewer:
     def on_button_click(self, event):
         """Callback für 'New random image' Button"""
         self.load_and_show_image()
+    
+    def on_reset_click(self, event):
+        """Callback für Reset-Button - setzt Slider auf ursprüngliche Werte zurück"""
+        for i, original_value in enumerate(self.original_latent_values):
+            clamped_value = numpy.clip(original_value, LATENT_VALUE_MIN, LATENT_VALUE_MAX)
+            self.sliders[i].set_val(clamped_value)
+        
+        # Rekonstruktion wird automatisch durch Slider-Callbacks aktualisiert
     
     def show(self):
         """Zeigt das Fenster an"""
