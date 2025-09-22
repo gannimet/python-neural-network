@@ -22,8 +22,8 @@ def create_image_from_prediction(prediction):
     prediction_clipped_and_scaled = numpy.clip(prediction_reshaped, 0, 1) * 255.0
     return Image.fromarray(prediction_clipped_and_scaled.astype(numpy.uint8))
 
-LATENT_VALUE_MIN = -2.0
-LATENT_VALUE_MAX = 2.0
+LATENT_VALUE_MIN = -5.0
+LATENT_VALUE_MAX = 5.0
 LATENT_GRID_SIZE = 4
 
 class AutoencoderViewer:
@@ -48,14 +48,18 @@ class AutoencoderViewer:
         # Erstes Bild laden und anzeigen
         self.load_and_show_image()
         
-        # Buttons für neues Bild und Reset
-        ax_button = plt.axes([0.35, 0.02, 0.15, 0.06])
+        # Buttons für neues Bild, Reset und "Set all to 0"
+        ax_button = plt.axes([0.28, 0.02, 0.15, 0.06])
         self.button = widgets.Button(ax_button, 'New random image')
         self.button.on_clicked(self.on_button_click)
         
-        ax_reset = plt.axes([0.52, 0.02, 0.1, 0.06])
+        ax_reset = plt.axes([0.45, 0.02, 0.1, 0.06])
         self.reset_button = widgets.Button(ax_reset, 'Reset')
         self.reset_button.on_clicked(self.on_reset_click)
+        
+        ax_zero = plt.axes([0.57, 0.02, 0.12, 0.06])
+        self.zero_button = widgets.Button(ax_zero, 'Set all to 0')
+        self.zero_button.on_clicked(self.on_zero_click)
     
     def setup_latent_area(self):
         """Erstellt die mittlere Spalte mit vertikalen Mini-Slidern"""
@@ -92,7 +96,7 @@ class AutoencoderViewer:
             )
             
             # Callback für Slider-Änderung hinzufügen
-            slider.on_changed(lambda val, idx=i: self.on_slider_change(idx, val))
+            slider.on_changed(lambda val, idx=i: self.on_slider_change())
             
             self.sliders.append(slider)
     
@@ -129,7 +133,7 @@ class AutoencoderViewer:
         # Display aktualisieren
         self.fig.canvas.draw()
     
-    def on_slider_change(self, slider_index, new_value):
+    def on_slider_change(self):
         """Callback für Slider-Änderungen - berechnet neue Rekonstruktion"""
         # Alle 16 Slider-Werte sammeln
         latent_copy = numpy.array([slider.val for slider in self.sliders]).reshape(-1, 1)
@@ -156,8 +160,11 @@ class AutoencoderViewer:
         for i, original_value in enumerate(self.original_latent_values):
             clamped_value = numpy.clip(original_value, LATENT_VALUE_MIN, LATENT_VALUE_MAX)
             self.sliders[i].set_val(clamped_value)
-        
-        # Rekonstruktion wird automatisch durch Slider-Callbacks aktualisiert
+
+    def on_zero_click(self, event):
+        """Callback für 'Set all to 0' Button - setzt alle Slider auf 0"""
+        for slider in self.sliders:
+            slider.set_val(0.0)
     
     def show(self):
         """Zeigt das Fenster an"""
