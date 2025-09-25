@@ -12,7 +12,7 @@ nn = NeuralNetwork(
 
 n_iterations = 100_000
 sample_size = 32
-inner_structure = [400, 200, 400]
+inner_structure = [64, 32, 16, 32, 64]
 
 nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
 

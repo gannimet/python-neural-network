@@ -7,15 +7,16 @@ if __name__ == "__main__":
     training_data = load_mnist_training_data(autoencoding=True)
     
     n_iterations = 100_000
-    sample_size = 50
+    sample_size = 32
     
     nn = NeuralNetwork(
-        structure=[784, 32, 16, 8, 16, 32, 784],
+        structure=[784, 64, 32, 16, 32, 64, 784],
         eta=0.003,
         hidden_activation_func=leaky_relu,
         output_activation_func=leaky_relu,
         n_iterations=n_iterations,
-        batch_size=sample_size
+        batch_size=sample_size,
+        save_every_1k=False
     )
     
     print("Training network …")

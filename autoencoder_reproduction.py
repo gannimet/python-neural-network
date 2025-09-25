@@ -9,7 +9,7 @@ nn = NeuralNetwork(
     output_activation_func=leaky_relu,
 )
 
-n_iterations = 1_000_000
+n_iterations = 100_000
 sample_size = 32
 inner_structure = [64, 32, 16, 32, 64]
 
