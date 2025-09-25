@@ -1,5 +1,4 @@
 import numpy
-from PIL import Image
 from neural_network import NeuralNetwork, leaky_relu
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
@@ -17,14 +16,10 @@ inner_structure = [64, 32, 16, 32, 64]
 nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
 mnist_test_files = utils.load_mnist_test_files()
 
-def create_image_from_prediction(prediction):
-    prediction_reshaped = prediction.reshape((28, 28))
-    prediction_clipped_and_scaled = numpy.clip(prediction_reshaped, 0, 1) * 255.0
-    return Image.fromarray(prediction_clipped_and_scaled.astype(numpy.uint8))
-
 LATENT_VALUE_MIN = -5.0
 LATENT_VALUE_MAX = 5.0
 LATENT_GRID_SIZE = 4
+LATENT_LAYER_INDEX = inner_structure.index(min(inner_structure)) + 1
 
 class AutoencoderViewer:
     def __init__(self):
@@ -70,7 +65,7 @@ class AutoencoderViewer:
         self.sliders = []
         
         # 4x4 Grid von vertikalen Mini-Slidern erstellen
-        for i in range(16):
+        for i in range(nn.structure[LATENT_LAYER_INDEX]):
             row = i // LATENT_GRID_SIZE
             col = i % LATENT_GRID_SIZE
             
@@ -105,8 +100,9 @@ class AutoencoderViewer:
         # Zufälliges Bild laden
         original_pil, prediction = utils.load_random_image_and_prediction(mnist_test_files, nn)
         
-        # Latent-Aktivierungen des Originalbildes abrufen (Neuronen 1-16, Bias bei 0 überspringen)
-        latent_activations = nn.activations[3][1:17].flatten()  # Index 1 bis 16 (17 exklusiv)
+        # Latent-Aktivierungen des Originalbildes abrufen (Bias bei 0 überspringen)
+        exclusive_end_index = nn.structure[LATENT_LAYER_INDEX] + 1
+        latent_activations = nn.activations[LATENT_LAYER_INDEX][1:exclusive_end_index].flatten()
         
         # Ursprüngliche Werte speichern für Reset-Funktion
         self.original_latent_values = latent_activations.copy()  
@@ -125,7 +121,7 @@ class AutoencoderViewer:
         
         # Rekonstruktion anzeigen (rechte Spalte)
         self.ax_reconstruction.clear()
-        reconstruction_pil = create_image_from_prediction(prediction)
+        reconstruction_pil = utils.create_image_from_prediction(prediction)
         self.ax_reconstruction.imshow(numpy.array(reconstruction_pil), cmap='gray')
         self.ax_reconstruction.set_title('Autoencoder Reconstruction')
         self.ax_reconstruction.axis('off')
@@ -139,11 +135,11 @@ class AutoencoderViewer:
         latent_copy = numpy.array([slider.val for slider in self.sliders]).reshape(-1, 1)
         
         # Neue Prediction ab Latent-Layer berechnen
-        prediction = nn.predict(latent_copy, 3)
+        prediction = nn.predict(latent_copy, LATENT_LAYER_INDEX)
         
         # Nur das Rekonstruktionsbild aktualisieren
         self.ax_reconstruction.clear()
-        reconstruction_pil = create_image_from_prediction(prediction)
+        reconstruction_pil = utils.create_image_from_prediction(prediction)
         self.ax_reconstruction.imshow(numpy.array(reconstruction_pil), cmap='gray')
         self.ax_reconstruction.set_title('Modified Reconstruction')
         self.ax_reconstruction.axis('off')

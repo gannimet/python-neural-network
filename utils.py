@@ -14,10 +14,15 @@ def load_mnist_training_files(label):
     mnist_training_folder = Path(f"./mnist/training_set/{label}")
     return [f for f in mnist_training_folder.iterdir() if f.suffix == '.jpg']
   
-def load_random_image_and_prediction(mnist_test_files, network):
-    random_file = random.choice(mnist_test_files)
+def load_random_image_and_prediction(image_files, network):
+    random_file = random.choice(image_files)
     image = Image.open(random_file)
     pixels = numpy.array(image).flatten() / 255.0
     inputs = pixels.reshape((784, 1))
     prediction = network.predict(inputs)
     return image, prediction
+
+def create_image_from_prediction(prediction):
+    prediction_reshaped = prediction.reshape((28, 28))
+    prediction_clipped_and_scaled = numpy.clip(prediction_reshaped, 0, 1) * 255.0
+    return Image.fromarray(prediction_clipped_and_scaled.astype(numpy.uint8))

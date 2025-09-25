@@ -10,7 +10,7 @@ if __name__ == "__main__":
     sample_size = 50
     
     nn = NeuralNetwork(
-        structure=[784, 100, 50, 25, 50, 100, 784],
+        structure=[784, 32, 16, 8, 16, 32, 784],
         eta=0.003,
         hidden_activation_func=leaky_relu,
         output_activation_func=leaky_relu,
