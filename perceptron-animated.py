@@ -1,9 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-def heaviside(x):
-    return 1 if x > 0 else 0
-
 class Perceptron():
     def __init__(self, b, w0, w1, eta):
         self.b = b
@@ -26,7 +23,7 @@ class Perceptron():
             for (y, points) in training_data:
                 for (x_0, x_1) in points:
                     z = self.b + self.w0 * x_0 + self.w1 * x_1
-                    a = heaviside(z)
+                    a = 1 if z > 0 else 0
                     error = y - a
                     d_b += self.eta * error
                     d_w0 += self.eta * error * x_0
@@ -76,7 +73,7 @@ def animate_perceptron(pcp, training_data):
         ax.set_title(f"Iteration {frame+1}")
         return line,
 
-    _ = FuncAnimation(fig, update, frames=len(pcp.history), interval=100, repeat=False)
+    _ = FuncAnimation(fig, update, frames=len(pcp.history), interval=50, repeat=False)
     plt.show()
 
 if __name__ == '__main__':
