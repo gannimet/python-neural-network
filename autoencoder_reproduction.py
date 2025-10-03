@@ -20,19 +20,43 @@ LATENT_VALUE_MIN = -5.0
 LATENT_VALUE_MAX = 5.0
 LATENT_GRID_SIZE = 4
 LATENT_LAYER_INDEX = inner_structure.index(min(inner_structure)) + 1
+NOISE_MULTIPLIER = 255
 
 class AutoencoderViewer:
     def __init__(self):
         # Größeres Fenster für drei Spalten - kompakter
         self.fig = plt.figure(figsize=(15, 6))
         
-        # Drei Hauptbereiche definieren
-        self.ax_original = plt.subplot(1, 3, 1)
-        self.ax_latent_area = plt.subplot(1, 3, 2)  
-        self.ax_reconstruction = plt.subplot(1, 3, 3)
+        # GridSpec: 2 Zeilen für linke/rechte Spalte, mittlere Spalte volle Höhe
+        gs = self.fig.add_gridspec(2, 3, height_ratios=[10, 1], hspace=0.15, 
+                                   bottom=0.12, top=0.92, left=0.05, right=0.95, wspace=0.3)
         
-        # Layout-Abstände anpassen - kompakter
-        plt.subplots_adjust(bottom=0.12, top=0.92, left=0.05, right=0.95, wspace=0.3)
+        # Drei Hauptbereiche definieren
+        self.ax_original = self.fig.add_subplot(gs[0, 0])
+        self.ax_latent_area = self.fig.add_subplot(gs[:, 1])  # Volle Höhe
+        self.ax_reconstruction = self.fig.add_subplot(gs[0, 2])  # Nur obere Zeile
+        
+        # Slider-Bereich unter dem linken Bild
+        ax_noise_slider = self.fig.add_subplot(gs[1, 0])
+        ax_noise_slider.axis('off')
+        
+        # Label manuell über dem Slider platzieren
+        slider_pos = ax_noise_slider.get_position()
+        self.fig.text(slider_pos.x0 + 0.02, slider_pos.y0 + 0.04, 'Noise level', 
+                      fontsize=10, verticalalignment='bottom')
+        
+        # Slider ohne Label
+        slider_ax = plt.axes([slider_pos.x0 + 0.02, slider_pos.y0 + 0.01, 
+                              slider_pos.width - 0.04, 0.02])
+        self.noise_slider = widgets.Slider(
+            slider_ax,
+            '',  # Kein Label
+            0.0,
+            1.0,
+            valinit=0.0,
+            orientation='horizontal'
+        )
+        self.noise_slider.on_changed(lambda val: self.on_noise_slider_change())
         
         # Slider-Container
         self.sliders = []
@@ -100,6 +124,9 @@ class AutoencoderViewer:
         # Zufälliges Bild laden
         original_pil, prediction = utils.load_random_image_and_prediction(mnist_test_files, nn)
         
+        # Original als numpy array speichern für Noise-Funktion
+        self.original_image = numpy.array(original_pil)
+        
         # Latent-Aktivierungen des Originalbildes abrufen (Bias bei 0 überspringen)
         exclusive_end_index = nn.structure[LATENT_LAYER_INDEX] + 1
         latent_activations = nn.activations[LATENT_LAYER_INDEX][1:exclusive_end_index].flatten()
@@ -115,7 +142,7 @@ class AutoencoderViewer:
         
         # Original anzeigen (linke Spalte)
         self.ax_original.clear()
-        self.ax_original.imshow(numpy.array(original_pil), cmap='gray')
+        self.ax_original.imshow(self.original_image, cmap='gray')
         self.ax_original.set_title('Original Image')
         self.ax_original.axis('off')
         
@@ -147,12 +174,51 @@ class AutoencoderViewer:
         # Effizientes Update ohne komplettes Neuzeichnen
         self.fig.canvas.draw_idle()
     
+    def on_noise_slider_change(self):
+        """Callback für Noise-Slider-Änderungen"""
+        noise_level = self.noise_slider.val
+        
+        # Rauschen aus Normalverteilung generieren, skaliert mit noise_level
+        # Standardabweichung proportional zum noise_level (z.B. noise_level * 50 für 0-255 Bereich)
+        noise = numpy.random.normal(0, noise_level * NOISE_MULTIPLIER, self.original_image.shape)
+        
+        # Rauschen zum Originalbild addieren
+        noisy_image = self.original_image + noise
+        
+        # Pixelwerte auf gültigen Bereich begrenzen (0-255 für uint8)
+        noisy_image = numpy.clip(noisy_image, 0, 255).astype(numpy.uint8)
+        
+        # Verrauschtes Bild anzeigen
+        self.ax_original.clear()
+        self.ax_original.imshow(noisy_image, cmap='gray')
+        self.ax_original.set_title(f'Original Image (Noise: {noise_level:.2f})')
+        self.ax_original.axis('off')
+        
+        # Verrauschtes Bild in Input-Vektor für Autoencoder umwandeln
+        # Normalisierung auf [0, 1] wie beim Training
+        noisy_input = noisy_image.flatten().reshape(-1, 1) / 255.0
+        
+        # Prediction durch den kompletten Autoencoder
+        prediction = nn.predict(noisy_input, 0)
+        
+        # Rekonstruktion anzeigen
+        self.ax_reconstruction.clear()
+        reconstruction_pil = utils.create_image_from_prediction(prediction)
+        self.ax_reconstruction.imshow(numpy.array(reconstruction_pil), cmap='gray')
+        self.ax_reconstruction.set_title('Noisy Image Reconstruction')
+        self.ax_reconstruction.axis('off')
+        
+        # Effizientes Update
+        self.fig.canvas.draw_idle()
+    
     def on_button_click(self, event):
         """Callback für 'New random image' Button"""
+        self.noise_slider.set_val(0.0)
         self.load_and_show_image()
     
     def on_reset_click(self, event):
         """Callback für Reset-Button - setzt Slider auf ursprüngliche Werte zurück"""
+        self.noise_slider.set_val(0.0)
         for i, original_value in enumerate(self.original_latent_values):
             clamped_value = numpy.clip(original_value, LATENT_VALUE_MIN, LATENT_VALUE_MAX)
             self.sliders[i].set_val(clamped_value)
