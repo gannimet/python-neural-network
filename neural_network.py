@@ -139,7 +139,7 @@ class NeuralNetwork():
                 prediction = self.predict(X)
                 diff = prediction - Y
                 output_layer_derivative = 2 * diff
-                error += numpy.sum(diff ** 2)
+                error += numpy.sum(numpy.abs(diff))
 
                 for l in range(len(self.activations)-1, 0, -1):
                     if l == len(self.activations) - 1:
