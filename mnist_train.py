@@ -29,10 +29,10 @@ if __name__ == "__main__":
     training_data = load_mnist_training_data()
     
     n_iterations = 10_000
-    sample_size = 50
+    sample_size = 32
     
     nn = NeuralNetwork(
-        structure=[784, 128, 64, 32, 32, 32, 10],
+        structure=[784, 64, 32, 16, 16, 16, 10],
         eta=0.02,
         hidden_activation_func=leaky_relu,
         output_activation_func=softmax,

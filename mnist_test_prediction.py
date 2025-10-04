@@ -10,8 +10,8 @@ nn = NeuralNetwork(
 )
 
 n_iterations = 10_000
-sample_size = 50
-inner_structure = [128, 64, 32, 32, 32]
+sample_size = 32
+inner_structure = [64, 32, 16, 16, 16]
 
 nn.load_from_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
 mnist_test_files = utils.load_mnist_test_files()
