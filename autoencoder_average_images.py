@@ -3,7 +3,6 @@ from neural_network import NeuralNetwork, leaky_relu
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
 import utils
-import random
 
 nn = NeuralNetwork(
     hidden_activation_func=leaky_relu,
