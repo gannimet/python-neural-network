@@ -12,15 +12,15 @@ nn = NeuralNetwork(
     output_activation_func=leaky_relu,
 )
 
-n_iterations = 100_000
-sample_size = 32
-inner_structure = [64, 32, 16, 32, 64]
+n_iterations = 10_000
+sample_size = 50
+inner_structure = [128, 64, 32, 32, 32]
 
-nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
+nn.load_from_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
 
 LATENT_LAYER_INDEX = inner_structure.index(min(inner_structure)) + 1
 PERPLEXITY = 10
-SAMPLES_PER_DIGIT=200
+SAMPLES_PER_DIGIT=300
 
 class LatentSpaceVisualizer:
     def __init__(self, nn, samples_per_digit):
