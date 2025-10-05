@@ -18,7 +18,7 @@ inner_structure = [64, 32, 16, 16, 16]
 
 nn.load_from_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
 
-LATENT_LAYER_INDEX = inner_structure.index(min(inner_structure)) + 1
+LATENT_LAYER_INDEX = len(nn.structure) - 2
 PERPLEXITY = 10
 SAMPLES_PER_DIGIT = 400
 
