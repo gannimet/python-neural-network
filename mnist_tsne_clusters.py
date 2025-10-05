@@ -17,6 +17,7 @@ nn.load_from_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample
 LATENT_LAYER_INDEX = len(nn.structure) - 2
 PERPLEXITY = 10
 SAMPLES_PER_DIGIT = 400
+N_DIMENSIONS = 2
 
 class LatentSpaceVisualizer:
     def __init__(self, nn, samples_per_digit):
@@ -48,7 +49,7 @@ class LatentSpaceVisualizer:
     
     def compute_tsne(self):
         tsne = TSNE(
-            n_components=2,
+            n_components=N_DIMENSIONS,
             perplexity=PERPLEXITY,
             random_state=42,
             max_iter=1000
@@ -57,30 +58,51 @@ class LatentSpaceVisualizer:
         self.embedded = tsne.fit_transform(self.latent_vectors)
     
     def create_plot(self):
-        """Erstellt die Visualisierung"""
-        self.fig, self.ax = plt.subplots(figsize=(8, 6))
-        
-        # Farben für die Digits
         colors = plt.cm.tab10(range(10))
         
-        # Jeden Digit als eigenen Scatter-Plot
-        for digit in range(10):
-            mask = self.labels == digit
-            self.ax.scatter(
-                self.embedded[mask, 0],
-                self.embedded[mask, 1],
-                c=[colors[digit]],
-                label=str(digit),
-                alpha=0.6,
-                s=20
-            )
+        if N_DIMENSIONS == 3:
+            # 3D Plot
+            self.fig = plt.figure(figsize=(10, 8))
+            self.ax = self.fig.add_subplot(111, projection='3d')
+            
+            for digit in range(10):
+                mask = self.labels == digit
+                self.ax.scatter(
+                    self.embedded[mask, 0],
+                    self.embedded[mask, 1],
+                    self.embedded[mask, 2],
+                    c=[colors[digit]],
+                    label=str(digit),
+                    alpha=0.6,
+                    s=20
+                )
+            
+            self.ax.set_xlabel('t-SNE Component 1')
+            self.ax.set_ylabel('t-SNE Component 2')
+            self.ax.set_zlabel('t-SNE Component 3')
+            self.ax.set_title(f't-SNE 3D Visualization ({self.samples_per_digit} samples per digit)')
+            
+        else:
+            # 2D Plot
+            self.fig, self.ax = plt.subplots(figsize=(8, 6))
+            
+            for digit in range(10):
+                mask = self.labels == digit
+                self.ax.scatter(
+                    self.embedded[mask, 0],
+                    self.embedded[mask, 1],
+                    c=[colors[digit]],
+                    label=str(digit),
+                    alpha=0.6,
+                    s=20
+                )
+            
+            self.ax.set_xlabel('t-SNE Component 1')
+            self.ax.set_ylabel('t-SNE Component 2')
+            self.ax.set_title(f't-SNE 2D Visualization ({self.samples_per_digit} samples per digit)')
+            self.ax.grid(True, alpha=0.3)
         
-        self.ax.set_title(f't-SNE Visualization of Latent Space ({self.samples_per_digit} samples per digit)')
-        self.ax.set_xlabel('t-SNE Component 1')
-        self.ax.set_ylabel('t-SNE Component 2')
         self.ax.legend(title='Digit', bbox_to_anchor=(1.05, 1), loc='upper left')
-        self.ax.grid(True, alpha=0.3)
-        
         plt.tight_layout()
     
     def show(self):
