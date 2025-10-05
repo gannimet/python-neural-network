@@ -1,4 +1,3 @@
-
 import numpy
 from neural_network import NeuralNetwork, leaky_relu
 import matplotlib.pyplot as plt
@@ -7,10 +6,7 @@ print("Importing Scikit Learn …")
 from sklearn.manifold import TSNE
 print("Done.")
 
-nn = NeuralNetwork(
-    hidden_activation_func=leaky_relu,
-    output_activation_func=leaky_relu,
-)
+nn = NeuralNetwork()
 
 n_iterations = 10_000
 sample_size = 32
