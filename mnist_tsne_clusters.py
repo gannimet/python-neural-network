@@ -17,7 +17,7 @@ nn.load_from_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample
 LATENT_LAYER_INDEX = len(nn.structure) - 2
 PERPLEXITY = 10
 SAMPLES_PER_DIGIT = 400
-N_DIMENSIONS = 2
+SHOW_3D = False
 
 class LatentSpaceVisualizer:
     def __init__(self, nn, samples_per_digit):
@@ -49,7 +49,7 @@ class LatentSpaceVisualizer:
     
     def compute_tsne(self):
         tsne = TSNE(
-            n_components=N_DIMENSIONS,
+            n_components=(3 if SHOW_3D else 2),
             perplexity=PERPLEXITY,
             random_state=42,
             max_iter=1000
@@ -60,7 +60,7 @@ class LatentSpaceVisualizer:
     def create_plot(self):
         colors = plt.cm.tab10(range(10))
         
-        if N_DIMENSIONS == 3:
+        if SHOW_3D:
             # 3D Plot
             self.fig = plt.figure(figsize=(10, 8))
             self.ax = self.fig.add_subplot(111, projection='3d')
