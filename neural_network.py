@@ -70,25 +70,22 @@ class NeuralNetwork():
             self.activations.append(layer_activations)
 
     def __init_weights(self):
-        self.weights = []
+        self.weights = [None]
 
-        for l in range(len(self.activations)):
-            if l == 0:
-                self.weights.append([])
-            else:
-                layer_weights = numpy.random.randn(
-                    len(self.weighted_sums[l]),
-                    len(self.activations[l-1])
-                ) * numpy.sqrt(2.0 / len(self.activations[l-1]))
+        for l in range(1, len(self.structure)):
+            layer_weights = numpy.random.randn(
+                self.structure[l],
+                self.structure[l-1] + 1
+            ) * numpy.sqrt(2.0 / (self.structure[l-1] + 1))
 
-                self.weights.append(layer_weights)
+            self.weights.append(layer_weights)
 
     def save_to_file(self, filename):
-        numpy.savez(filename, *self.weights)
+        numpy.savez(filename, *self.weights[1:])
 
     def load_from_file(self, filename):
         loaded_weights = numpy.load(filename)
-        self.weights = [loaded_weights[key] for key in loaded_weights]
+        self.weights = [None] + [loaded_weights[key] for key in loaded_weights]
         self.structure = []
         
         for l in range(1, len(self.weights)):
@@ -98,16 +95,16 @@ class NeuralNetwork():
         self.__init_layers()
 
     def predict(self, X, start_layer=0):
-        if len(X) != len(self.activations[start_layer]) - 1:
+        if len(X) != self.structure[start_layer]:
             raise Exception("Falsche Anzahl an Input-Werten übergeben")
 
         self.activations[start_layer][1:] = X
-        
-        for l in range(start_layer + 1, len(self.activations)):
-            self.weighted_sums[l] = numpy.matmul(self.weights[l], self.activations[l-1])
+
+        for l in range(start_layer + 1, len(self.structure)):
+            self.weighted_sums[l][:] = numpy.matmul(self.weights[l], self.activations[l-1])
 
             if l == len(self.activations) - 1:
-                self.activations[l] = self.output_activation_func(self.weighted_sums[l])
+                self.activations[l][:] = self.output_activation_func(self.weighted_sums[l])
             else:
                 self.activations[l][1:] = self.hidden_activation_func(self.weighted_sums[l])
 
@@ -115,15 +112,12 @@ class NeuralNetwork():
 
     def train(self, training_data):
         partial_deltas = []
-        for l in range(len(self.activations)):
-            partial_deltas.append(numpy.zeros((len(self.weighted_sums[l]), 1)))
+        for l in range(len(self.structure)):
+            partial_deltas.append(numpy.zeros_like(self.weighted_sums[l]))
 
-        delta_W = []
-        for l in range(len(self.activations)):
-            if l == 0:
-                delta_W.append([])
-            else:
-                delta_W.append(numpy.zeros_like(self.weights[l]))
+        delta_W = [None]
+        for l in range(1, len(self.structure)):
+            delta_W.append(numpy.zeros_like(self.weights[l]))
 
         for i in range(self.n_iterations):
             training_batch = (
@@ -131,37 +125,38 @@ class NeuralNetwork():
                 if self.batch_size == 0
                 else random.sample(training_data, self.batch_size)
             )
-            error = 0
-            for X, Y in training_batch:
-                if len(Y) != len(self.activations[-1]):
+            total_error = 0
+
+            for (X, Y) in training_batch:
+                if len(Y) != self.structure[-1]:
                     raise Exception("Falsche Anzahl an erwarteten Output-Werten übergeben")
 
                 prediction = self.predict(X)
-                diff = prediction - Y
-                output_layer_derivative = 2 * diff
-                error += numpy.abs(diff).sum()
+                error = prediction - Y
+                output_layer_derivative = 2 * error
+                total_error += numpy.abs(error).sum()
 
-                for l in range(len(self.activations)-1, 0, -1):
-                    if l == len(self.activations) - 1:
+                for l in range(len(self.structure) - 1, 0, -1):
+                    if l == len(self.structure) - 1:
                         if self.output_activation_func == softmax:
-                            partial_deltas[l] = diff
+                            partial_deltas[l][:] = error
                         else:
-                            partial_deltas[l] = output_layer_derivative * \
+                            partial_deltas[l][:] = output_layer_derivative * \
                                 self.output_activation_func(self.weighted_sums[l], derivative=True)
                     else:
-                        partial_deltas[l] = \
+                        partial_deltas[l][:] = \
                             numpy.matmul(self.weights[l+1][:, 1:].T, partial_deltas[l+1]) * \
                             self.hidden_activation_func(self.weighted_sums[l], derivative=True)
 
-                    delta_W[l] += -self.eta * numpy.matmul(partial_deltas[l], self.activations[l-1].T)
+                    delta_W[l][:] += -self.eta * numpy.matmul(partial_deltas[l], self.activations[l-1].T)
 
             for l in range(1, len(delta_W)):
-                self.weights[l] += delta_W[l] / len(training_batch)
+                self.weights[l][:] += delta_W[l] / len(training_batch)
                 delta_W[l][:] = 0
 
-            self.error_progression.append(error)
+            self.error_progression.append(total_error)
             now = datetime.now()
-            print(f"Finished iteration {i} at {now.strftime("%H:%M:%S")}, Error: {error}")
+            print(f"Finished iteration {i} at {now.strftime("%H:%M:%S")}, Error: {total_error}")
             
             if self.save_every_1k and (i == 0 or (i+1) % 1_000 == 0):
                 self.save_to_file(f"classification_models/mnist_weights_i{i+1}_s{self.batch_size}_{utils.get_layer_descriptor(self.structure[1:-1])}.npz")

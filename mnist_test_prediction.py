@@ -9,11 +9,12 @@ nn = NeuralNetwork(
     output_activation_func=softmax,
 )
 
-n_iterations = 10_000
+n_iterations = 5_000
 sample_size = 32
 inner_structure = [64, 32, 16, 16, 16]
 
-nn.load_from_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
+filename = f"classification_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz"
+nn.load_from_file(filename)
 mnist_test_files = utils.load_mnist_test_files()
 
 fig = plt.figure(1, figsize=(8, 4))

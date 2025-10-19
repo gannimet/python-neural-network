@@ -6,7 +6,7 @@ if __name__ == "__main__":
     print("Loading training data …")
     training_data = load_mnist_training_data(autoencoding=True)
     
-    n_iterations = 100_000
+    n_iterations = 100
     sample_size = 32
     
     nn = NeuralNetwork(

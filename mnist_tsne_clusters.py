@@ -8,7 +8,7 @@ print("Done.")
 
 nn = NeuralNetwork()
 
-n_iterations = 10_000
+n_iterations = 5_000
 sample_size = 32
 inner_structure = [64, 32, 16, 16, 16]
 

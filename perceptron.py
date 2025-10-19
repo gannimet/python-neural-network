@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 
 class Perceptron():
-    def __init__(self, b, w0, w1, eta):
-        self.b = b
+    def __init__(self, w0, w1, b, eta):
         self.w0 = w0
         self.w1 = w1
+        self.b = b
         self.eta = eta
         self.total_num_iterations = 0
 
@@ -20,12 +20,12 @@ class Perceptron():
 
             for (y, points) in training_data:
                 for (x_0, x_1) in points:
-                    z = self.b + self.w0 * x_0 + self.w1 * x_1
+                    z = self.w0 * x_0 + self.w1 * x_1 + self.b
                     a = 1 if z > 0 else 0
                     error = y - a
-                    d_b += self.eta * error
                     d_w0 += self.eta * error * x_0
                     d_w1 += self.eta * error * x_1
+                    d_b += self.eta * error
                     total_error += error ** 2
 
             if total_error == 0:
@@ -35,22 +35,22 @@ class Perceptron():
                 print(f"Giving up after {self.total_num_iterations} iterations.")
                 return
 
-            d_b = d_b / total_num_points
             d_w0 = d_w0 / total_num_points
             d_w1 = d_w1 / total_num_points
+            d_b = d_b / total_num_points
 
-            self.b += d_b
             self.w0 += d_w0
             self.w1 += d_w1
+            self.b += d_b
 
 
 if __name__ == '__main__':
     classified_points = [
-        (0, [(2, 0), (-4, 3), (-5, 5), (-2, 2)]),
-        (1, [(-3, 7), (2, 5),  (5, 3), (3, 2)])
+        (0, [(2, 0), (-4, 3), (-5, 5), (-2, 2), (-3, 1), (-1, -1)]),
+        (1, [(0, 4), (2, 5),  (5, 3), (3, 2), (1, 6), (7, 1)])
     ]
 
-    pcp = Perceptron(3, -12, 5, 0.1)
+    pcp = Perceptron(0.5, -0.3, 0.2, 0.1)
     pcp.train(classified_points)
     
     m = -(pcp.w0 / pcp.w1)
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     plt.scatter(*zip(*classified_points[1][1]), color='red', label='Klasse 1')
     plt.legend()
 
-    X = [-8, 8]
+    X = [-10, 10]
     Y = [m * x + n for x in X]
     plt.plot(X, Y, color='green')
     

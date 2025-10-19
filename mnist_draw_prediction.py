@@ -9,7 +9,7 @@ nn = NeuralNetwork(
     output_activation_func=softmax,
 )
 
-n_iterations = 10_000
+n_iterations = 5_000
 sample_size = 32
 inner_structure = [64, 32, 16, 16, 16]
 
@@ -70,18 +70,14 @@ def draw_on_canvas(event):
     """Zeichnet auf dem Canvas an der Mausposition"""
     global canvas
     
-    # Mausposition in Pixel-Koordinaten umrechnen
     x, y = int(event.xdata), int(event.ydata)
     
-    # Sicherstellen, dass wir im gültigen Bereich sind
     if 0 <= x < 28 and 0 <= y < 28:
-        # Pinselgröße: 2x2 Pixel für bessere Sichtbarkeit
         brush_size = 1
-        for dx in range(-brush_size, brush_size + 1):
-            for dy in range(-brush_size, brush_size + 1):
+        for dx in range(0, brush_size + 1):
+            for dy in range(0, brush_size + 1):
                 nx, ny = x + dx, y + dy
                 if 0 <= nx < 28 and 0 <= ny < 28:
-                    # Weiß zeichnen (255) mit etwas Transparenz für weichere Striche
                     canvas[ny, nx] = min(255, canvas[ny, nx] + 100)
         
         update_prediction()

@@ -5,7 +5,7 @@ if __name__ == '__main__':
     nn = NeuralNetwork(
         structure=[3, 4, 1],
         eta=0.01,
-        n_iterations=5_000,
+        n_iterations=3_000,
         output_activation_func=leaky_relu,
         hidden_activation_func=leaky_relu
     )
