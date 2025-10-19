@@ -2,6 +2,7 @@ import random
 from PIL import Image
 import numpy
 from pathlib import Path
+import inquirer
 
 def get_layer_descriptor(inner_structure):
     return "x".join(map(str, inner_structure))
@@ -26,3 +27,21 @@ def create_image_from_prediction(prediction):
     prediction_reshaped = prediction.reshape((28, 28))
     prediction_clipped_and_scaled = numpy.clip(prediction_reshaped, 0, 1) * 255.0
     return Image.fromarray(prediction_clipped_and_scaled.astype(numpy.uint8))
+
+def select_model_file(classification=True):
+    folder = Path(f"classification_models/") if classification else Path(f"autoencoder_models/")
+    filenames = [f.name for f in folder.iterdir() if f.is_file() and f.suffix == ".npz"]
+    filenames.sort()
+
+    questions = [
+        inquirer.List(
+            'filename',
+            message="Welches Modell soll geladen werden?",
+            choices=filenames,
+            carousel=True
+        )
+    ]
+    answer = inquirer.prompt(questions)
+    filename = folder.joinpath(answer["filename"])
+    
+    return filename

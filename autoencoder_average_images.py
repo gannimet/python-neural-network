@@ -9,11 +9,10 @@ nn = NeuralNetwork(
     output_activation_func=leaky_relu,
 )
 
-n_iterations = 100_000
-sample_size = 32
-inner_structure = [64, 32, 16, 32, 64]
+filename = utils.select_model_file(classification=False)
+nn.load_from_file(filename)
 
-nn.load_from_file(f"autoencoder_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(inner_structure)}.npz")
+inner_structure = nn.structure[1:-1]
 
 LATENT_LAYER_INDEX = inner_structure.index(min(inner_structure)) + 1
 
