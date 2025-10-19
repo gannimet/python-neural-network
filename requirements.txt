@@ -1,0 +1,6 @@
+scikit-learn>=1.7.2
+pillow>=11.1.0
+numpy>=2.2.3
+matplotlib>=3.10.1
+inquirer>=3.4.1
+pathlib>=1.0.1
