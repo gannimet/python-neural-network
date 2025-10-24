@@ -30,15 +30,19 @@ if __name__ == "__main__":
     
     n_iterations = 5_000
     sample_size = 32
+    structure = [784, 64, 32, 16, 16, 16, 10]
+    learning_rate = 0.02
+    hidden_activation_func = leaky_relu
+    save_every_1k = True
     
     nn = NeuralNetwork(
-        structure=[784, 64, 32, 16, 16, 16, 10],
-        eta=0.02,
-        hidden_activation_func=leaky_relu,
+        structure=structure,
+        eta=learning_rate,
+        hidden_activation_func=hidden_activation_func,
         output_activation_func=softmax,
         n_iterations=n_iterations,
         batch_size=sample_size,
-        save_every_1k=True
+        save_every_1k=save_every_1k
     )
     
     print("Training network …")
