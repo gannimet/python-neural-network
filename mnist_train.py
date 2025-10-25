@@ -25,15 +25,16 @@ def load_mnist_training_data(autoencoding=False):
     return training_data
         
 if __name__ == "__main__":
-    print("Loading training data …")
-    training_data = load_mnist_training_data()
-    
     n_iterations = 5_000
     sample_size = 32
     structure = [784, 64, 32, 16, 16, 16, 10]
     learning_rate = 0.02
     hidden_activation_func = leaky_relu
     save_every_1k = True
+    autoencoding = False
+    
+    print("Loading training data …")
+    training_data = load_mnist_training_data(autoencoding=autoencoding)
     
     nn = NeuralNetwork(
         structure=structure,
@@ -48,5 +49,6 @@ if __name__ == "__main__":
     print("Training network …")
     nn.train(training_data)
     
-    nn.save_to_file(f"classification_models/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(nn.structure[1:-1])}.npz")
+    folder = "autoencoder_models" if autoencoding else "classification_models"
+    nn.save_to_file(f"{folder}/mnist_weights_i{n_iterations}_s{sample_size}_{utils.get_layer_descriptor(nn.structure[1:-1])}.npz")
     nn.plot()

@@ -1,12 +1,12 @@
-[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/richard-wotzlaw-8653b688/)
-
-[![Email Badge](https://img.shields.io/badge/Gmail-Contact_Me-green?style=flat-square&logo=gmail&logoColor=FFFFFF&labelColor=3A3B3C&color=62F1CD)](mailto:r.wotzlaw@gmail.com)
-
 # Ein neuronales Netz in Python
 
 Hier gibt es alle Inhalte meines VHS-Kurses „Künstliche Intelligenz selbst gemacht – Ein neuronales Netz mit Python entwickeln”. Ich nehme im Laufe der Zeit immer wieder kleine Änderungen am Kurs, dem Code und den Folien vor, korrigiere Fehler oder füge Inhalte hinzu. Es lohnt sich also, das Repository im Blick zu behalten, wenn ihr weiterhin am Thema interessiert seid.
 
 Den Foliensatz findet ihr in der Datei [neuronale_netze.pdf](neuronale_netze.pdf).
+
+## Fragen oder Verbesserungsvorschläge?
+
+Kontaktiert mich gerne per Mail an [info@colimit.de](mailto:info@colimit.de). Ihr findet mich auch auf [LinkedIn](https://www.linkedin.com/in/richard-wotzlaw-8653b688/) und auf [meiner Webseite](https://colimit.de).
 
 ## Benötigte Libraries installieren
 
@@ -41,11 +41,28 @@ Wenn ihr diese Datei ausführt, lädt sie die [MNIST-Trainingsbilder](https://en
 
 - `n_iterations`: Die Anzahl der Trainingsiterationen („Epochen”), die durchgeführt werden sollen
 - `sample_size`: Wie viele Trainingsbeispiele bei jeder Iteration verwendet werden sollen
-- `structure`: Die Struktur des Netzwerks als Liste von Zahlen, die jeweils die Anzahl der Neuronen pro Layer angeben. Da die Bilder 784 Pixel haben und in zehn Klassen eingeteilt werden sollen, müssen die erste und die letzte Zahl der Liste so bleiben, mit den Neuronenzahlen der Hidden-Layer könnt ihr beliebig experimentieren.
+- `structure`: Die Struktur des Netzwerks als Liste von Zahlen, die jeweils die Anzahl der Neuronen pro Layer angeben. Da die Bilder 784 Pixel haben und in zehn Klassen eingeteilt werden sollen, müssen die erste und die letzte<sup>1</sup> Zahl der Liste so bleiben, mit den Neuronenzahlen der Hidden-Layer könnt ihr beliebig experimentieren.
 - `learning_rate`: Die Lernrate $\eta$ des neuronalen Netzes
 - `hidden_activation_func`: Die Aktivierungsfunktion, die in den Hidden-Layers verwendet werden soll
-- `save_every_1k`: Wenn die Variable auf `True` steht, wird jeweils nach 1000 Trainingsiterationen eine Datei mit den bis dahin ermittelten Gewichten angelegt.
+- `save_every_1k`: Wenn `True`, dann wird jeweils nach 1000 Trainingsiterationen eine Datei mit den bis dahin ermittelten Gewichten angelegt.
+- `autoencoding`: Wenn `True`, werden die Trainingsdaten so angelegt, dass ein Autoencoder trainiert werden kann, der lernt, die Bilder, die er als Inputs bekommt, als seinen eigenen Output vorauszusagen.
 
-Nach beendetem Training werden die trainierten Gewichte im Ordner `classification_models` als `.npz`-Datei(en) angelegt. Diese Dateien enthalten die `numpy`-Gewichtsmatrizen und können verwendet werden, um ein `NeuralNetwork`-Objekt mithilfe der Methode `load_from_file` in einen bereits trainierten Zustand zu versetzen, ohne die langwierige Berechnung wiederholen zu müssen.
+<sup>1</sup> Im Falle, dass ihr einen Autoencoder trainieren wollt, muss die letzte Zahl der `structure`-Liste ebenfalls 784 sein
 
-Genau auf diese Weise werden die `.npz`-Dateien von den Skripten `mnist_test_prediction.py` und `mnist_draw_prediction.py` verwendet.
+Nach beendetem Training werden die trainierten Gewichte im Ordner `classification_models` (bzw. `autoencoder_models`, falls ihr `autoencoding` auf `True` gestellt habt) als `.npz`-Datei(en) angelegt. Diese Dateien enthalten die `numpy`-Gewichtsmatrizen und können verwendet werden, um ein `NeuralNetwork`-Objekt mithilfe der Methode `load_from_file` in einen bereits trainierten Zustand zu versetzen, ohne die langwierige Berechnung wiederholen zu müssen.
+
+Genau auf diese Weise werden die `.npz`-Dateien von den Skripten `mnist_test_prediction.py` und `mnist_draw_prediction.py` verwendet. Die Namen der Dateien starten jeweils mit `mnist_weights` und enthalten dann mit Unterstrichen getrennt noch drei weitere Informationen:
+
+- Wie viele Iterationen gemacht wurden, um die Gewichte in der Datei zu ermitteln (Zahl hinter dem `i`)
+- Wie große die Batch-Größe bei jeder Trainingsiteration war (Zahl hinter dem `s`)
+- Die Anzahl der Neuronen in den Hidden-Layers (z. B. bedeutet `64x32x16`, dass es drei Hidden-Layer mit jeweils 64, 32 und 16 Neuronen gab)
+
+### [mnist_test_prediction.py](mnist_test_prediction.py)
+
+Wenn im Ordner `classification_models` Dateien mit trainierten Modellen liegen, könnt ihr diese benutzen, um euch vorhersagen für Test-Bilder aus dem MNIST-Datensatz anzeigen zu lassen. Dazu startet ihr einfach dieses Skript. Auf der Konsole erscheint dann eine Abfrage, welche Modell-Datei ihr laden wollt und darunter eine Liste aller gefundenen `.npz`-Dateien. Navigiert einfach mit den Pfeiltasten durch die Liste und wählt mit Enter diejenige aus, deren Gewichte ihr verwenden wollt.
+
+Es erscheint ein Fenster, in dem ihr im linken Bereich ein zufällig geladenes Bild aus dem Testdatensatz seht und rechts davon ein Balken-Diagramm mit der Vorhersage des neuronalen Netzes – also den Softmax-Aktivierungen des letzten Layers. Über den Button „New random image” könnt ihr ein neues zufälliges Testbild laden und dessen Vorhersage anzeigen.
+
+### [mnist_draw_prediction.py](mnist_draw_prediction.py)
+
+Funktioniert genauso wie [mnist_test_prediction.py](mnist_test_prediction.py), nur dass hier keine Bilder aus dem MNIST-Datensatz geladen werden, sondern ihr in die schwarze Fläche links selbst eine Zahl mit dem Mauszeiger malen könnt. Die Vorhersage rechts updatet sich automatisch bei jeder Änderung.
