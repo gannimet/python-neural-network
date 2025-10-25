@@ -6,7 +6,7 @@ Den Foliensatz findet ihr in der Datei [neuronale_netze.pdf](neuronale_netze.pdf
 
 ## Fragen oder Verbesserungsvorschläge?
 
-Kontaktiert mich gerne per Mail an [info@colimit.de](mailto:info@colimit.de). Ihr findet mich auch auf [LinkedIn](https://www.linkedin.com/in/richard-wotzlaw-8653b688/) und auf [meiner Webseite](https://colimit.de).
+Kontaktiert mich gerne per Mail an [info@colimit.de](mailto:info@colimit.de). Ich freue mich auch über Berichte von euren eigenen Projekten, bei denen ihr den Code aus meinem Kurs eingesetzt habt oder zu denen ihr zumindest durch den Kurs inspiriert wurdet. Ihr findet mich auch auf [LinkedIn](https://www.linkedin.com/in/richard-wotzlaw-8653b688/) und auf [meiner Webseite](https://colimit.de).
 
 ## Benötigte Libraries installieren
 
@@ -23,6 +23,8 @@ Nicht auf alle Python-Dateien gehe ich im Rahmen des Kurses ganz genau ein. Die,
 ### [perceptron.py](perceptron.py)
 
 Der Code für das Perceptron mit zwei Inputs, den wir gemeinsam im Kurs entwickeln. Die Datei enthält sowohl die Klasse als auch den Code, der sie verwendet, um ein Perceptron auf einen Datensatz aus insgesamt 12 Punkten zu trainieren. Wenn ihr die Datei ausführt, öffnet sich ein Fenster, dass nach erfolgreichem Training die ermittelte Trennlinie durch die zwei Punktwolken anzeigt.
+
+![Trainierte Trenngerade zwischen zwei Punktwolken](https://github.com/user-attachments/assets/d8b77f0d-c59d-4904-9ad1-3677ab59af02)
 
 ### [perceptron_animated.py](perceptron_animated.py)
 
@@ -63,7 +65,7 @@ Wenn im Ordner `classification_models` Dateien mit trainierten Modellen liegen, 
 
 Es erscheint ein Fenster, in dem ihr im linken Bereich ein zufällig geladenes Bild aus dem Testdatensatz seht und rechts davon ein Balken-Diagramm mit der Vorhersage des neuronalen Netzes – also den Softmax-Aktivierungen des letzten Layers. Über den Button „New random image” könnt ihr ein neues zufälliges Testbild laden und dessen Vorhersage anzeigen.
 
-![image](https://github.com/user-attachments/assets/14ccc38b-f058-448d-887c-56be1999ded6)
+![Vorhersage des neuronalen Netzes für das MNIST-Bild einer 6](https://github.com/user-attachments/assets/14ccc38b-f058-448d-887c-56be1999ded6)
 
 ### [mnist_draw_prediction.py](mnist_draw_prediction.py)
 
