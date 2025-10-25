@@ -63,6 +63,8 @@ Wenn im Ordner `classification_models` Dateien mit trainierten Modellen liegen, 
 
 Es erscheint ein Fenster, in dem ihr im linken Bereich ein zufällig geladenes Bild aus dem Testdatensatz seht und rechts davon ein Balken-Diagramm mit der Vorhersage des neuronalen Netzes – also den Softmax-Aktivierungen des letzten Layers. Über den Button „New random image” könnt ihr ein neues zufälliges Testbild laden und dessen Vorhersage anzeigen.
 
+![image](https://github.com/user-attachments/assets/14ccc38b-f058-448d-887c-56be1999ded6)
+
 ### [mnist_draw_prediction.py](mnist_draw_prediction.py)
 
 Funktioniert genauso wie [mnist_test_prediction.py](mnist_test_prediction.py), nur dass hier keine Bilder aus dem MNIST-Datensatz geladen werden, sondern ihr in die schwarze Fläche links selbst eine Zahl mit dem Mauszeiger malen könnt. Die Vorhersage rechts updatet sich automatisch bei jeder Änderung.
