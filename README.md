@@ -51,6 +51,8 @@ Wenn ihr diese Datei ausführt, lädt sie die [MNIST-Trainingsbilder](https://en
 
 <sup>1</sup> Im Falle, dass ihr einen Autoencoder trainieren wollt, muss die letzte Zahl der `structure`-Liste ebenfalls 784 sein
 
+**Tipp**: Für das Training eines Autoencoders solltet ihr die Lernrate etwa eine Größenordnung kleiner wählen als für die Klassifikation.
+
 Nach beendetem Training werden die trainierten Gewichte im Ordner `classification_models` (bzw. `autoencoder_models`, falls ihr `autoencoding` auf `True` gestellt habt) als `.npz`-Datei(en) angelegt. Diese Dateien enthalten die `numpy`-Gewichtsmatrizen und können verwendet werden, um ein `NeuralNetwork`-Objekt mithilfe der Methode `load_from_file` in einen bereits trainierten Zustand zu versetzen, ohne die langwierige Berechnung wiederholen zu müssen.
 
 Genau auf diese Weise werden die `.npz`-Dateien von den Skripten `mnist_test_prediction.py` und `mnist_draw_prediction.py` verwendet. Die Namen der Dateien starten jeweils mit `mnist_weights` und enthalten dann mit Unterstrichen getrennt noch drei weitere Informationen:
@@ -70,3 +72,9 @@ Es erscheint ein Fenster, in dem ihr im linken Bereich ein zufällig geladenes B
 ### [mnist_draw_prediction.py](mnist_draw_prediction.py)
 
 Funktioniert genauso wie [mnist_test_prediction.py](mnist_test_prediction.py), nur dass hier keine Bilder aus dem MNIST-Datensatz geladen werden, sondern ihr in die schwarze Fläche links selbst eine Zahl mit dem Mauszeiger malen könnt. Die Vorhersage rechts updatet sich automatisch bei jeder Änderung.
+
+### [mnist_tsne_clusters.py](mnist_tsne_clusters.py)
+
+Auch wenn ihr dieses Skript startet, werdet ihr zu Beginn auf der Konsole um die Auswahl einer gespeicherten Modelldatei gebeten. Habt ihr das getan, kann es ein wenig dauern, während das Programm rechnet. Nach einiger Zeit sollte dann ein Fenster erscheinen, in dem ihr farbige Punktecluster seht. Jede Farbe steht dabei für eine der zehn Ziffern, in die das geladene Modell gelernt hat, die MNIST-Bilder zu klassifizieren. Jeder Punkt entspricht einem zufällig geladenen MNIST-Bild, auf dem die jeweilige Ziffer zu sehen ist. Der Ort, an dem der Punkt auf dem Diagramm erscheint, entspricht der zweidimensionalen Projektion des multidimensionalen Embedding-Vektors, der sich aus den Aktivierungen des Latent-Layers des Netzwerks für dieses Bild ergibt. Dazu verwendet das Skript den [t-SNE-Algorithmus](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding).
+
+Wenn ihr im Skript die Variable `SHOW_3D` auf `True` setzt und das Skript neu startet, seht ihr statt der 2D- eine 3D-Projektion der Latent-Vektoren. Ihr könnt das Diagramm dann per Drag & Drop rotieren.
