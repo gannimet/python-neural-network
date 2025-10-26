@@ -103,7 +103,7 @@ class NeuralNetwork():
         for l in range(start_layer + 1, len(self.structure)):
             self.weighted_sums[l][:] = numpy.matmul(self.weights[l], self.activations[l-1])
 
-            if l == len(self.activations) - 1:
+            if l == len(self.structure) - 1:
                 self.activations[l][:] = self.output_activation_func(self.weighted_sums[l])
             else:
                 self.activations[l][1:] = self.hidden_activation_func(self.weighted_sums[l])

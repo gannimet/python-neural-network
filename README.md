@@ -39,7 +39,7 @@ Diese Datei ist das Herzstück und enthält die Klasse `NeuralNetwork`, die das 
 
 ### [mnist_train.py](mnist_train.py)
 
-Wenn ihr diese Datei ausführt, lädt sie die [MNIST-Trainingsbilder](https://en.wikipedia.org/wiki/MNIST_database) aus dem Ordner `mnist` und trainiert ein `NeuralNetwork`-Objekt darauf, diesen Datensatz klassifizieren zu können. Die Parameter des Trainings könnt ihr einstellen, indem ihr in der Datei die Werte der folgenden Variablen anpasst:
+Wenn ihr diese Datei ausführt, lädt sie die [MNIST-Trainingsbilder](https://en.wikipedia.org/wiki/MNIST_database) aus dem Ordner `mnist` und trainiert ein `NeuralNetwork`-Objekt darauf, diesen Datensatz klassifizieren (oder autoencoden) zu können. Die Parameter des Trainings könnt ihr einstellen, indem ihr in der Datei die Werte der folgenden Variablen anpasst:
 
 - `n_iterations`: Die Anzahl der Trainingsiterationen („Epochen”), die durchgeführt werden sollen
 - `sample_size`: Wie viele Trainingsbeispiele bei jeder Iteration verwendet werden sollen
