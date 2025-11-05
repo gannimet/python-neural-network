@@ -60,7 +60,6 @@ if __name__ == '__main__':
     print(f"Total # of iterations: {pcp.total_num_iterations}")
     print(f"Linear function params (m, n) = {(m, n)}")
 
-    plt.figure(1, figsize=(5, 5))
     plt.scatter(*zip(*classified_points[0][1]), color='blue', label='Klasse 0')
     plt.scatter(*zip(*classified_points[1][1]), color='red', label='Klasse 1')
     plt.legend()
@@ -72,5 +71,6 @@ if __name__ == '__main__':
     plt.xlabel('x_0')
     plt.ylabel('x_1')
     plt.grid()
+    plt.tight_layout()
     plt.show()
 

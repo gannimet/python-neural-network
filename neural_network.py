@@ -175,8 +175,8 @@ class NeuralNetwork():
             print(self.weights[i])
 
     def plot(self):
-        plt.figure(1, figsize=(5, 5))
         plt.plot(self.error_progression)
         plt.xlabel('Iteration')
         plt.ylabel('Fehler')
+        plt.tight_layout()
         plt.show()
