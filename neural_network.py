@@ -61,8 +61,8 @@ class NeuralNetwork():
         
         for l in range(len(self.structure)):
             is_output_layer = l == len(self.structure) - 1
-            n_activations = self.structure[l] if is_output_layer else self.structure[l] + 1
-            n_weighted_sums = self.structure[l]
+            n_weighted_sums = self.structure[l]    
+            n_activations = n_weighted_sums if is_output_layer else n_weighted_sums + 1
             layer_weighted_sums = numpy.zeros((n_weighted_sums, 1))
             layer_activations = numpy.ones((n_activations, 1))
 
