@@ -10,8 +10,9 @@ class Perceptron():
 
     def train(self, training_data):
         total_num_points = len(training_data[0][1]) + len(training_data[1][1])
+        max_num_iterations = 100_000
 
-        while True:
+        for i in range(max_num_iterations):
             d_b = 0
             d_w0 = 0
             d_w1 = 0
@@ -31,10 +32,6 @@ class Perceptron():
             if total_error == 0:
                 return
 
-            if self.total_num_iterations >= 100000:
-                print(f"Giving up after {self.total_num_iterations} iterations.")
-                return
-
             d_w0 = d_w0 / total_num_points
             d_w1 = d_w1 / total_num_points
             d_b = d_b / total_num_points
@@ -42,6 +39,8 @@ class Perceptron():
             self.w0 += d_w0
             self.w1 += d_w1
             self.b += d_b
+            
+        print(f"Giving up after {max_num_iterations} iterations.")
 
 
 if __name__ == '__main__':
