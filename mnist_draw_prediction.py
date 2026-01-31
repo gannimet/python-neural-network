@@ -29,7 +29,7 @@ def update_prediction():
     input_vector = canvas.flatten().reshape(-1, 1) / 255.0
     
     # Prediction berechnen
-    prediction = nn.predict(input_vector, 0)
+    prediction = nn.predict(input_vector)
     
     # Balkendiagramm aktualisieren
     ax_bar.clear()
