@@ -25,12 +25,12 @@ def load_mnist_training_data(autoencoding=False):
     return training_data
         
 if __name__ == "__main__":
-    n_iterations = 5_000
+    n_iterations = 100_000
     sample_size = 32
     structure = [784, 64, 32, 16, 16, 16, 10]
     learning_rate = 0.02
     hidden_activation_func = leaky_relu
-    save_every_1k = True
+    save_every_1k = False
     autoencoding = False
     
     print("Loading training data …")
