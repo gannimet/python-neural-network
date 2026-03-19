@@ -1,7 +1,7 @@
 from PIL import Image
 import numpy
 import random
-from neural_network import NeuralNetwork, leaky_relu, softmax, sigmoid
+from neural_network import NeuralNetwork, leaky_relu, softmax, sigmoid, relu
 import utils
 
 def load_mnist_training_data(autoencoding=False):
@@ -30,6 +30,7 @@ if __name__ == "__main__":
     structure = [784, 64, 32, 16, 16, 16, 10]
     learning_rate = 0.02
     hidden_activation_func = leaky_relu
+    output_activation_func = softmax
     save_every_1k = False
     autoencoding = False
     
@@ -40,7 +41,7 @@ if __name__ == "__main__":
         structure=structure,
         eta=learning_rate,
         hidden_activation_func=hidden_activation_func,
-        output_activation_func=softmax,
+        output_activation_func=output_activation_func,
         n_iterations=n_iterations,
         batch_size=sample_size,
         save_every_1k=save_every_1k
