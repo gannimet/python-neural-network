@@ -1,11 +1,10 @@
 import matplotlib.pyplot as plt
 
 class Perceptron():
-    def __init__(self, w0, w1, b, eta):
-        self.w0 = w0
-        self.w1 = w1
-        self.b = b
-        self.eta = eta
+    def __init__(self):
+        self.w0 = 0
+        self.w1 = 0
+        self.b = 0
         self.total_num_iterations = 0
 
     def train(self, training_data):
@@ -24,9 +23,9 @@ class Perceptron():
                     z = self.w0 * x_0 + self.w1 * x_1 + self.b
                     a = 1 if z > 0 else 0
                     error = y - a
-                    d_w0 += self.eta * error * x_0
-                    d_w1 += self.eta * error * x_1
-                    d_b += self.eta * error
+                    d_w0 += error * x_0
+                    d_w1 += error * x_1
+                    d_b += error
                     total_error += error ** 2
 
             if total_error == 0:
@@ -45,11 +44,11 @@ class Perceptron():
 
 if __name__ == '__main__':
     classified_points = [
-        (0, [(2, 0), (-4, 3), (-5, 5), (-2, 2), (-3, 1), (-1, -1)]),
-        (1, [(0, 4), (2, 5),  (5, 3), (3, 2), (1, 6), (7, 1)])
+        (0, [(0.54, 0.31), (0.37, 0.48), (0.46, 0.42), (0.56, 0.25), (0.77, 0.22), (0.42, 0.46)]),
+        (1, [(0.54, 0.60), (0.71, 0.62), (0.51, 0.63), (0.67, 0.44), (0.37, 0.81), (0.65, 0.54)])
     ]
 
-    pcp = Perceptron(0.5, -0.3, 0.2, 0.1)
+    pcp = Perceptron()
     pcp.train(classified_points)
     
     m = -(pcp.w0 / pcp.w1)
@@ -59,11 +58,11 @@ if __name__ == '__main__':
     print(f"Total # of iterations: {pcp.total_num_iterations}")
     print(f"Linear function params (m, n) = {(m, n)}")
 
-    plt.scatter(*zip(*classified_points[0][1]), color='blue', label='Klasse 0')
-    plt.scatter(*zip(*classified_points[1][1]), color='red', label='Klasse 1')
+    plt.scatter(*zip(*classified_points[0][1]), color='blue', label='Iris Setosa')
+    plt.scatter(*zip(*classified_points[1][1]), color='red', label='Iris Versicolor')
     plt.legend()
 
-    X = [-10, 10]
+    X = [0, 1]
     Y = [m * x + n for x in X]
     plt.plot(X, Y, color='green')
     
