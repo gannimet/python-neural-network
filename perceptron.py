@@ -54,9 +54,9 @@ if __name__ == '__main__':
     m = -(pcp.w0 / pcp.w1)
     n = -(pcp.b / pcp.w1)
 
-    print(f"Final weights: (b, w0, w1) = {(pcp.b, pcp.w0, pcp.w1)}")
+    print(f"Final weights: {pcp.b=}, {pcp.w0=}, {pcp.w1=}")
     print(f"Total # of iterations: {pcp.total_num_iterations}")
-    print(f"Linear function params (m, n) = {(m, n)}")
+    print(f"Linear function params: {m=}, {n=}")
 
     plt.scatter(*zip(*classified_points[0][1]), color='blue', label='Iris Setosa')
     plt.scatter(*zip(*classified_points[1][1]), color='red', label='Iris Versicolor')

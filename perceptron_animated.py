@@ -83,7 +83,7 @@ if __name__ == '__main__':
     pcp = Perceptron()
     pcp.train(classified_points)
 
-    print("Final weights: (b, w0, w1) = ", (pcp.b, pcp.w0, pcp.w1))
-    print("Total # of iterations:", pcp.total_num_iterations)
+    print(f"Final weights: {pcp.b=}, {pcp.w0=}, {pcp.w1=}")
+    print(f"Total # of iterations: {pcp.total_num_iterations}")
 
     animate_perceptron(pcp, classified_points)
