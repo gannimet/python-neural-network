@@ -9,7 +9,7 @@ nn = NeuralNetwork(
     output_activation_func=leaky_relu,
 )
 
-filename = utils.select_model_file(classification=False)
+filename = utils.select_model_file(utils.ModelMode.MNIST_AUTOENCODER)
 nn.load_from_file(filename)
 
 inner_structure = nn.structure[1:-1]

@@ -3,6 +3,12 @@ from PIL import Image
 import numpy
 from pathlib import Path
 import inquirer
+from enum import Enum
+
+class ModelMode(Enum):
+    MNIST_CLASSIFICATION = 0
+    MNIST_AUTOENCODER = 1
+    KAFKAI = 2
 
 def get_layer_descriptor(inner_structure):
     return "x".join(map(str, inner_structure))
@@ -28,8 +34,18 @@ def create_image_from_prediction(prediction):
     prediction_clipped_and_scaled = numpy.clip(prediction_reshaped, 0, 1) * 255.0
     return Image.fromarray(prediction_clipped_and_scaled.astype(numpy.uint8))
 
-def select_model_file(classification=True):
-    folder = Path(f"classification_models/") if classification else Path(f"autoencoder_models/")
+def select_model_file(model_mode):
+    folder = None
+    
+    if model_mode == ModelMode.MNIST_CLASSIFICATION:
+        folder = Path("classification_models/")
+    elif model_mode == ModelMode.MNIST_AUTOENCODER:
+        folder = Path("autoencoder_models/")
+    elif model_mode == ModelMode.KAFKAI:
+        folder = Path("kafkai_models/")
+    else:
+        raise Exception(f"Unknown model mode: {model_mode}")
+    
     filenames = [f.name for f in folder.iterdir() if f.is_file() and f.suffix == ".npz"]
     filenames.sort()
 

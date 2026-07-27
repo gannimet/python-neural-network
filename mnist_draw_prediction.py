@@ -9,7 +9,7 @@ nn = NeuralNetwork(
     output_activation_func=softmax,
 )
 
-filename = utils.select_model_file(classification=True)
+filename = utils.select_model_file(utils.ModelMode.MNIST_CLASSIFICATION)
 nn.load_from_file(filename)
 
 # Initialisierung

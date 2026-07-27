@@ -8,7 +8,7 @@ print("Done.")
 
 nn = NeuralNetwork()
 
-filename = utils.select_model_file(classification=True)
+filename = utils.select_model_file(utils.ModelMode.MNIST_CLASSIFICATION)
 nn.load_from_file(filename)
 
 LATENT_LAYER_INDEX = len(nn.structure) - 2
