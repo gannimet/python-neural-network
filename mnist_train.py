@@ -1,13 +1,14 @@
 from PIL import Image
 import numpy
 import random
-from neural_network import NeuralNetwork, leaky_relu, softmax, sigmoid, relu
+from neural_network import NeuralNetwork, leaky_relu, softmax
 import utils
 
 def load_mnist_training_data(autoencoding=False):
     training_data = []
     
     for label in range(10):
+        print(label)
         files = utils.load_mnist_training_files(label)
         outputs = numpy.zeros((10, 1))
         outputs[label, 0] = 1.0
